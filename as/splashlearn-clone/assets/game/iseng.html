@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pertarungan Ajaib Matematika Ultimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* Modern Reset */
+    :root {
+      --primary: #8f94fb;
+      --primary-dark: #4e54c8;
+      --secondary: #ff7e5f;
+      --secondary-dark: #feb47b;
+      --success: #4CAF50;
+      --danger: #F44336;
+      --warning: #FFC107;
+      --info: #2196F3;
+      --dark: #121212;
+      --darker: #0a0a0a;
+      --light: #f8f9fa;
+      --lighter: #ffffff;
+      --wizard-color: #6a5acd;
+      --monster-color: #d62246;
+      --fire: #ff416c;
+      --water: #1a8cff;
+      --nature: #4CAF50;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark);
+      color: var(--light);
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+    
+    /* Game Container */
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #1a1a2e, #0f0f1a);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+    }
+    
+    /* Particle Background */
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0.3;
+    }
+    
+    /* Start Screen */
+    #start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+    
+    #title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4.5rem;
+      color: var(--primary);
+      text-shadow: 0 0 20px rgba(143, 148, 251, 0.8);
+      margin-bottom: 1.5rem;
+      animation: pulse 2s infinite, glow 3s ease-in-out infinite alternate;
+      letter-spacing: 3px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    #subtitle {
+      font-size: 1.5rem;
+      color: var(--light);
+      margin-bottom: 2rem;
+      text-align: center;
+      opacity: 0.8;
+    }
+    
+    #instructions {
+      max-width: 700px;
+      margin-bottom: 3rem;
+      line-height: 1.8;
+      text-align: center;
+      color: var(--light);
+      font-size: 1.1rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2rem;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Game Screen */
+    #game-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    
+    /* Battle Arena */
+    #battle-arena {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url('https://img.freepik.com/premium-photo/terrain-with-rugged-dirt-paths-steep-slopes-game-background-pixel-art-generative-ai_898634-419.jpg?w=2000') center/cover no-repeat;
+      z-index: 2;
+    }
+    
+    /* Characters */
+    .character {
+      position: absolute;
+      bottom: 150px;
+      width: 200px;
+      height: 250px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      transition: all 0.3s;
+      z-index: 10;
+      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.7));
+    }
+    
+    #wizard {
+      left: 10px;
+      background-image: url('https://th.bing.com/th/id/OIP.LFRmwBbFeiDKrHdnhWtCWwHaIM?w=164&h=181&c=7&r=0&o=5&dpr=1.1&pid=1.7');
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    #monster {
+      right: 10px;
+      background-image: url('https://th.bing.com/th/id/OIP.k6gNPhwtYnomYgbNc_cCRwHaKe?pid=ImgDet&w=199&h=281&c=7&dpr=1,1');
+      animation: float 3s ease-in-out infinite 1.0s;
+    }
+    
+    /* Projectiles */
+    .projectile {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-size: contain;
+      z-index: 5;
+      display: none;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+    
+    #fireball {
+      background-image: url('https://www.textures4photoshop.com/tex/thumbs/fireball-PNG-transparent-background-thumb35.png');
+      bottom: 200px;
+      left: 200px;
+      color: var(--fire);
+    }
+    
+    #waterball {
+      background-image: url('https://th.bing.com/th/id/R.dbd99180e70101572778188b5ec50af2?rik=ZYbDppeKOl9p%2bA&riu=http%3a%2f%2fclipart-library.com%2fimages_k%2fball-transparent%2fball-transparent-21.png&ehk=alz6agaHZjhP38tyOJQ3rgCWP35MXYoP9aT324XMf%2bs%3d&risl=&pid=ImgRaw&r=0');
+      bottom: 200px;
+      left: 200px;
+      color: var(--water);
+      display: none;
+    }
+    
+    #natureball {
+      background-image: url('https://i.imgur.com/XyLdQ9m.png');
+      bottom: 200px;
+      left: 200px;
+      color: var(--nature);
+      display: none;
+    }
+    
+    /* UI Elements */
+    #ui-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+    
+    .health-bar-container {
+      position: absolute;
+      width: 250px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .health-bar {
+      height: 100%;
+      width: 100%;
+      transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .health-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #f00, #ff5e00, #ff0);
+    }
+    
+    .health-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+      background-size: 200% 100%;
+      animation: shine 2s infinite;
+    }
+    
+    #wizard-health {
+      top: 30px;
+      left: 30px;
+    }
+    
+    #monster-health {
+      top: 30px;
+      right: 30px;
+    }
+    
+    #wizard-health .health-fill {
+      background: linear-gradient(90deg, var(--wizard-color), #9b59b6);
+    }
+    
+    #monster-health .health-fill {
+      background: linear-gradient(90deg, var(--monster-color), #e74c3c);
+    }
+    
+    .character-name {
+      position: absolute;
+      top: -25px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 5px black;
+      font-size: 1.1rem;
+    }
+    
+    /* Stats Container */
+    #stats-container {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      display: flex;
+      gap: 20px;
+    }
+    
+    .stat-box {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      min-width: 120px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+    }
+    
+    #score-value {
+      color: var(--primary);
+    }
+    
+    #streak-value {
+      color: var(--secondary);
+    }
+    
+    #level-value {
+      color: var(--warning);
+    }
+    
+    /* Element Selection */
+    #element-selector {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+      z-index: 25;
+    }
+    
+    .element-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+    
+    .element-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .element-btn:hover::after {
+      opacity: 0.3;
+    }
+    
+    .element-btn.active {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px currentColor;
+    }
+    
+    #fire-btn {
+      background: linear-gradient(135deg, var(--fire), #ff4b2b);
+    }
+    
+    #water-btn {
+      background: linear-gradient(135deg, var(--water), #1e90ff);
+    }
+    
+    #nature-btn {
+      background: linear-gradient(135deg, var(--nature), #2ecc71);
+    }
+    
+    /* Question Box */
+    #question-container {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      z-index: 15;
+    }
+    
+    #question-box {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      transform-style: preserve-3d;
+      transform: perspective(500px);
+    }
+    
+    #question-text {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(143, 148, 251, 0.5);
+      font-weight: bold;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #answer-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    #answer-input {
+      width: 150px;
+      padding: 15px;
+      font-size: 1.5rem;
+      border-radius: 10px;
+      border: 2px solid var(--primary);
+      background: rgba(255, 255, 255, 0.95);
+      text-align: center;
+      color: var(--dark);
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    #answer-input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 15px var(--secondary);
+    }
+    
+    #answer-input.wrong {
+      animation: shake 0.5s;
+      border-color: var(--danger);
+      box-shadow: 0 0 15px var(--danger);
+    }
+    
+    /* Buttons */
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .difficulty-btn {
+      width: 180px;
+      margin: 10px;
+    }
+    
+    .easy { 
+      background: linear-gradient(135deg, var(--success), #2ecc71);
+    }
+    
+    .medium { 
+      background: linear-gradient(135deg, var(--warning), #f39c12);
+    }
+    
+    .hard { 
+      background: linear-gradient(135deg, var(--danger), #e74c3c);
+    }
+    
+    /* Effects */
+    .effect {
+      position: absolute;
+      pointer-events: none;
+      z-index: 8;
+    }
+    
+    /* Damage Indicator */
+    .damage-indicator {
+      position: absolute;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 5px black;
+      z-index: 12;
+      animation: floatUp 1s forwards;
+    }
+    
+    /* Timer */
+    #timer-container {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50px;
+      padding: 10px 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #timer-icon {
+      font-size: 1.5rem;
+      color: var(--warning);
+    }
+    
+    #timer {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    /* Combo Meter */
+    #combo-meter {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    #combo-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s;
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px var(--primary); }
+      100% { text-shadow: 0 0 30px var(--secondary); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+    
+    @keyframes explode {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    
+    @keyframes shine {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+    
+    @keyframes elementPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 10px currentColor; }
+      50% { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    }
+    
+    /* Mobile Controls */
+    #mobile-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: none;
+      z-index: 30;
+    }
+    
+/* Mobile Kecil (≤480px) */
+@media (max-width: 480px) {
+  #title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  #wizard, #monster {
+    width: 120px;
+    height: 160px;
+  }
+
+  #question-text {
+    font-size: 1.2rem;
+  }
+
+  #answer-input {
+    font-size: 1rem;
+    width: 80%;
+  }
+
+  #submit-answer {
+    font-size: 1rem;
+    width: 80%;
+  }
+
+  #fireball {
+    width: 40px;
+  }
+}
+
+/* Tablet (≤768px) */
+@media (max-width: 768px) {
+  #title {
+    font-size: 2.5rem;
+  }
+
+  #wizard {
+    left: 50px;
+    width: 150px;
+    height: 200px;
+  }
+
+  #monster {
+    right: 50px;
+    width: 150px;
+    height: 200px;
+  }
+
+  #question-container {
+    bottom: 100px;
+    width: 90%;
+  }
+
+  #question-text {
+    font-size: 1.5rem;
+  }
+
+  #answer-input, #submit-answer {
+    font-size: 1.2rem;
+    width: 100%;
+  }
+
+  #answer-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Laptop (≤1024px) */
+@media (max-width: 1024px) {
+  #title {
+    font-size: 3rem;
+  }
+
+  #wizard, #monster {
+    width: 180px;
+    height: 220px;
+  }
+
+  #question-text {
+    font-size: 1.8rem;
+  }
+}
+
+/* Layar Lebar (≥1025px) */
+@media (min-width: 1025px) {
+  #title {
+    font-size: 3.5rem;
+  }
+
+  #wizard, #monster {
+    width: 200px;
+    height: 250px;
+  }
+
+  #question-text {
+    font-size: 2rem;
+  }
+
+  #answer-input, #submit-answer {
+    font-size: 1.2rem;
+  }
+}
+  /* Tambahkan CSS ini di bagian head atau dalam tag style */
+  
+  /* Health bar di atas karakter */
+  .character-health-container {
+    position: absolute;
+    width: 100px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 10;
+  }
+  
+  .character-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    transition: width 0.3s ease;
+  }
+  
+  #wizard-health-container {
+    bottom: 180px;
+    left: 200px;
+  }
+  
+  #monster-health-container {
+    bottom: 180px;
+    left: 650px;
+  }
+  
+  /* Modal kemenangan */
+  .modal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+    
+    /* Special Effects */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+      z-index: 100;
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(143, 148, 251, 0.5);
+      border: 1px solid var(--primary);
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+    
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+    
+    .modal-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .modal-text {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Start Screen -->
+    <div id="start-screen">
+      <h1 id="title">PERTARUNGAN AJAIB MATEMATIKA</h1>
+      <p id="subtitle">Kuasai Matematika, Kalahkan Monster!</p>
+      <p id="instructions">
+        Dalam dunia sihir ini, pengetahuan matematikamu adalah senjatamu!<br>
+        Jawab soal matematika dengan benar untuk menyerang monster.<br>
+        Setiap 5 jawaban benar berturut-turut akan mengalahkan monster!<br>
+        Jawaban salah akan membuatmu diserang balik!
+      </p>
+      <button id="start-btn" class="btn">MULAI PETUALANGAN</button>
+      <div>
+        <p style="margin-bottom: 1rem; font-size: 1.2rem;">Pilih Tingkat Kesulitan:</p>
+        <button class="btn difficulty-btn easy" data-difficulty="easy">Pemula</button>
+        <button class="btn difficulty-btn medium" data-difficulty="medium">Ahli</button>
+        <button class="btn difficulty-btn hard" data-difficulty="hard">Master</button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen">
+      <!-- Battle Arena -->
+      <div id="battle-arena"></div>
+      
+      <!-- UI Elements -->
+      <div id="ui-container">
+        <!-- Health Bars -->
+        <div id="wizard-health" class="health-bar-container">
+          <div class="character-name">Penyihir</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+        
+        <div id="monster-health" class="health-bar-container">
+          <div class="character-name">Monster</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+        
+        <!-- Timer -->
+        <div id="timer-container">
+          <span id="timer-icon">⏱️</span>
+          <span id="timer">30</span>
+        </div>
+        
+        <!-- Combo Meter -->
+        <div id="combo-meter">
+          <div id="combo-fill"></div>
+        </div>
+      </div>
+
+      <!-- Characters -->
+      <div id="wizard" class="character"></div>
+      <div id="monster" class="character"></div>
+      
+      <!-- Projectiles -->
+      <div id="fireball" class="projectile"></div>
+      <div id="waterball" class="projectile"></div>
+      <div id="natureball" class="projectile"></div>
+      
+      <!-- Question Container -->
+      <div id="question-container">
+        <div id="question-box">
+          <div id="question-text">Memuat Pertanyaan...</div>
+          <div id="answer-container">
+            <input type="number" id="answer-input" placeholder="Jawaban" />
+            <button id="submit-answer" class="btn">SERANG!</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Container -->
+      <div id="stats-container">
+        <div class="stat-box">
+          <div class="stat-title">Skor</div>
+          <div id="score-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Streak</div>
+          <div id="streak-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Level</div>
+          <div id="level-value" class="stat-value">1</div>
+        </div>
+      </div>
+      
+      <!-- Element Selection -->
+      <div id="element-selector">
+        <button id="fire-btn" class="element-btn active" data-element="FIRE">🔥</button>
+        <button id="water-btn" class="element-btn" data-element="WATER">💧</button>
+        <button id="nature-btn" class="element-btn" data-element="NATURE">🌿</button>
+      </div>
+      
+      <!-- Mobile Controls -->
+      <div id="mobile-controls">
+        <button id="mobile-attack" class="btn">Serang</button>
+      </div>
+    </div>
+    
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">KAMU MENANG!</h2>
+        <p class="modal-text">Kamu telah mengalahkan monster dengan kekuatan matematikamu!</p>
+        <p id="final-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        <button id="next-level-btn" class="btn">Level Berikutnya</button>
+        <button id="restart-btn" class="btn" style="margin-top: 1rem; background: linear-gradient(135deg, var(--danger), #e74c3c)">Main Lagi</button>
+      </div>
+    </div>
+    
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">GAME OVER</h2>
+        <p class="modal-text">Monster terlalu kuat untukmu saat ini. Tingkatkan kemampuan matematikamu dan coba lagi!</p>
+        <p id="gameover-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        <button id="try-again-btn" class="btn">Coba Lagi</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Modifikasi modal kemenangan -->
+<div id="victory-modal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title">LEVEL SELESAI!</h2>
+    <p class="modal-text">Kamu telah mengalahkan monster dengan kekuatan matematikamu!</p>
+    <p id="final-score" class="modal-text">Skor Akhir: <span>0</span></p>
+    
+    <div class="modal-options">
+      <button id="next-level-btn" class="btn">Lanjut ke Level Berikutnya</button>
+      <button id="restart-btn" class="btn" style="background: linear-gradient(135deg, var(--danger), #e74c3c)">
+        Akhiri Permainan
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- Audio Elements -->
+  <audio id="shoot-sound" src="https://www.soundjay.com/mechanical/sounds/laser-01.mp3"></audio>
+  <audio id="hit-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3"></audio>
+  <audio id="win-sound" src="https://www.soundjay.com/misc/sounds/magic-chime-02.mp3"></audio>
+  <audio id="lose-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-02.mp3"></audio>
+  <audio id="background-music" loop src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  <audio id="element-change-sound" src="https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3"></audio>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Enhanced Game State
+    const gameState = {
+      score: 0,
+      correctStreak: 0,
+      wrongStreak: 0,
+      difficulty: "medium",
+      wizardHealth: 100,
+      maxWizardHealth: 100,
+      monsterHealth: 150,
+      maxMonsterHealth: 150,
+      currentLevel: 1,
+      gameActive: false,
+      timeLeft: 30,
+      timerInterval: null,
+      elements: {
+        FIRE: { 
+          name: "Api", 
+          emoji: "🔥", 
+          color: "#ff416c",
+          weakTo: 'WATER', 
+          strongAgainst: 'NATURE',
+          projectile: 'fireball'
+        },
+        WATER: { 
+          name: "Air", 
+          emoji: "💧", 
+          color: "#1a8cff",
+          weakTo: 'NATURE', 
+          strongAgainst: 'FIRE',
+          projectile: 'waterball'
+        },
+        NATURE: { 
+          name: "Alam", 
+          emoji: "🌿", 
+          color: "#4CAF50",
+          weakTo: 'FIRE', 
+          strongAgainst: 'WATER',
+          projectile: 'natureball'
+        }
+      },
+      activeElement: 'FIRE',
+      currentQuestion: null,
+      correctAnswer: null,
+      questionHistory: [],
+      comboTimeLeft: 0,
+      maxComboTime: 5,
+      comboMultiplier: 1
+    };
+
+    // DOM Elements
+    const elements = {
+      startScreen: document.getElementById('start-screen'),
+      gameScreen: document.getElementById('game-screen'),
+      wizard: document.getElementById('wizard'),
+      monster: document.getElementById('monster'),
+      fireball: document.getElementById('fireball'),
+      waterball: document.getElementById('waterball'),
+      natureball: document.getElementById('natureball'),
+      questionText: document.getElementById('question-text'),
+      answerInput: document.getElementById('answer-input'),
+      submitBtn: document.getElementById('submit-answer'),
+      scoreValue: document.getElementById('score-value'),
+      streakValue: document.getElementById('streak-value'),
+      levelValue: document.getElementById('level-value'),
+      wizardHealth: document.querySelector('#wizard-health .health-fill'),
+      monsterHealth: document.querySelector('#monster-health .health-fill'),
+      startBtn: document.getElementById('start-btn'),
+      fireBtn: document.getElementById('fire-btn'),
+      waterBtn: document.getElementById('water-btn'),
+      natureBtn: document.getElementById('nature-btn'),
+      difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+      mobileAttackBtn: document.getElementById('mobile-attack'),
+      timer: document.getElementById('timer'),
+      comboFill: document.getElementById('combo-fill'),
+      victoryModal: document.getElementById('victory-modal'),
+      gameoverModal: document.getElementById('gameover-modal'),
+      finalScore: document.getElementById('final-score span'),
+      gameoverScore: document.getElementById('gameover-score span'),
+      nextLevelBtn: document.getElementById('next-level-btn'),
+      restartBtn: document.getElementById('restart-btn'),
+      tryAgainBtn: document.getElementById('try-again-btn')
+    };
+
+    // Audio
+    const audio = {
+      shoot: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/laser-01.mp3'] }),
+      hit: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-01.mp3'] }),
+      win: new Howl({ src: ['https://www.soundjay.com/misc/sounds/magic-chime-02.mp3'] }),
+      lose: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-02.mp3'] }),
+      bgm: new Howl({ 
+        src: ['https://www.soundjay.com/misc/sounds/magic-chime-01.mp3'],
+        loop: true,
+        volume: 0.3
+      }),
+      correct: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-09.mp3'] }),
+      wrong: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-10.mp3'] }),
+      elementChange: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3'], volume: 0.5 })
+    };
+
+    // Initialize Game
+    function initGame() {
+      // Initialize particles
+      particlesJS('particles-js', {
+        particles: {
+          number: { value: 80, density: { enable: true, value_area: 800 } },
+          color: { value: "#8f94fb" },
+          shape: { type: "circle" },
+          opacity: { value: 0.5, random: true },
+          size: { value: 3, random: true },
+          line_linked: { enable: true, distance: 150, color: "#8f94fb", opacity: 0.4, width: 1 },
+          move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "repulse" },
+            onclick: { enable: true, mode: "push" }
+          }
+        }
+      });
+
+      // Event Listeners
+      elements.startBtn.addEventListener('click', startGame);
+      elements.submitBtn.addEventListener('click', checkAnswer);
+      elements.answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+      });
+      elements.mobileAttackBtn.addEventListener('click', checkAnswer);
+      
+      // Element Selection
+      elements.fireBtn.addEventListener('click', () => changeElement('FIRE'));
+      elements.waterBtn.addEventListener('click', () => changeElement('WATER'));
+      elements.natureBtn.addEventListener('click', () => changeElement('NATURE'));
+      
+      // Difficulty Selection
+      elements.difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          gameState.difficulty = btn.dataset.difficulty;
+          elements.difficultyBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+      
+      // Modal Buttons
+      elements.nextLevelBtn.addEventListener('click', nextLevel);
+      elements.restartBtn.addEventListener('click', restartGame);
+      elements.tryAgainBtn.addEventListener('click', restartGame);
+      
+      // Set default difficulty
+      document.querySelector('.difficulty-btn.medium').classList.add('active');
+      
+      // Initialize UI
+      updateHealthBars();
+      updateStats();
+    }
+
+    // Start Game
+    function startGame() {
+      elements.startScreen.style.display = 'none';
+      elements.gameScreen.style.display = 'block';
+      gameState.gameActive = true;
+      
+      // Reset game state
+      gameState.score = 0;
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      gameState.wizardHealth = gameState.maxWizardHealth;
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      gameState.currentLevel = 1;
+      gameState.timeLeft = 30;
+      gameState.comboTimeLeft = 0;
+      gameState.comboMultiplier = 1;
+      
+      // Start background music
+      audio.bgm.play();
+      
+      // Start timer
+      startTimer();
+      
+      // Generate first question
+      generateQuestion();
+      
+      // Update UI
+      updateStats();
+      updateHealthBars();
+      updateComboMeter();
+    }
+
+    // Game Timer
+    function startTimer() {
+      clearInterval(gameState.timerInterval);
+      gameState.timeLeft = 30;
+      updateTimerDisplay();
+      
+      gameState.timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        updateTimerDisplay();
+        
+        if (gameState.timeLeft <= 0) {
+          clearInterval(gameState.timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      elements.timer.textContent = gameState.timeLeft;
+      
+      // Visual feedback when time is running out
+      if (gameState.timeLeft <= 10) {
+        elements.timer.style.color = 'var(--danger)';
+        if (gameState.timeLeft <= 5) {
+          gsap.to(elements.timer, { 
+            scale: 1.2, 
+            duration: 0.3, 
+            yoyo: true, 
+            repeat: 1 
+          });
+        }
+      } else {
+        elements.timer.style.color = 'white';
+      }
+    }
+
+    function handleTimeOut() {
+      showFeedback("Waktu Habis!", false);
+      handleWrongAnswer();
+      startTimer(); // Reset timer for next question
+    }
+
+    // Element System
+    function changeElement(element) {
+      if (!gameState.gameActive) return;
+      
+      gameState.activeElement = element;
+      audio.elementChange.play();
+      
+      // Update active button
+      elements.fireBtn.classList.remove('active');
+      elements.waterBtn.classList.remove('active');
+      elements.natureBtn.classList.remove('active');
+      
+      const activeBtn = elements[`${element.toLowerCase()}Btn`];
+      activeBtn.classList.add('active');
+      
+      // Visual feedback
+      gsap.to(activeBtn, {
+        scale: 1.2,
+        duration: 0.3,
+        yoyo: true,
+        repeat: 1
+      });
+      
+      showFeedback(`Elemen ${gameState.elements[element].name} Aktif!`, true);
+    }
+
+    // Generate Math Question
+    function generateQuestion() {
+      let num1, num2, operator, answer;
+      const operators = ['+', '-', '*', '/'];
+      
+      // Generate question based on difficulty and level
+      switch(gameState.difficulty) {
+        case 'easy':
+          num1 = Math.floor(Math.random() * (5 + gameState.currentLevel * 2)) + 1;
+          num2 = Math.floor(Math.random() * (5 + gameState.currentLevel * 2)) + 1;
+          operator = operators[Math.floor(Math.random() * 2)]; // + or -
+          break;
+        case 'medium':
+          num1 = Math.floor(Math.random() * (10 + gameState.currentLevel * 3)) + 1;
+          num2 = Math.floor(Math.random() * (10 + gameState.currentLevel * 3)) + 1;
+          operator = operators[Math.floor(Math.random() * 3)]; // +, -, or *
+          break;
+        case 'hard':
+          num1 = Math.floor(Math.random() * (15 + gameState.currentLevel * 5)) + 1;
+          num2 = Math.floor(Math.random() * (10 + gameState.currentLevel * 3)) + 1;
+          operator = operators[Math.floor(Math.random() * 4)]; // +, -, *, or /
+          break;
+      }
+      
+      // Ensure division problems result in whole numbers
+      if (operator === '/') {
+        const product = num1 * num2;
+        num1 = product;
+        answer = num2;
+      } else {
+        answer = eval(`${num1} ${operator} ${num2}`);
+      }
+      
+      // Format question text
+      let questionText;
+      if (operator === '*') {
+        questionText = `Berapakah ${num1} × ${num2}?`;
+      } else if (operator === '/') {
+        questionText = `Berapakah ${num1} ÷ ${num2}?`;
+      } else {
+        questionText = `Berapakah ${num1} ${operator} ${num2}?`;
+      }
+      
+      elements.questionText.textContent = questionText;
+      gameState.correctAnswer = answer;
+      
+      // Reset timer for this question
+      resetTimer();
+      
+      return answer;
+    }
+
+    // Check Answer
+    function checkAnswer() {
+      if (!gameState.gameActive) return;
+      
+      const userAnswer = parseFloat(elements.answerInput.value);
+      
+      if (isNaN(userAnswer)) {
+        showFeedback("Masukkan jawaban yang valid!", false);
+        elements.answerInput.classList.add('wrong');
+        setTimeout(() => elements.answerInput.classList.remove('wrong'), 500);
+        return;
+      }
+      
+      // Check if answer is correct (with tolerance for floating point)
+      const isCorrect = Math.abs(userAnswer - gameState.correctAnswer) < 0.0001;
+      
+      if (isCorrect) {
+        handleCorrectAnswer();
+      } else {
+        handleWrongAnswer();
+      }
+      
+      // Clear input
+      elements.answerInput.value = '';
+      elements.answerInput.focus();
+    }
+
+    function handleCorrectAnswer() {
+      gameState.correctStreak++;
+      gameState.wrongStreak = 0;
+      gameState.score += 5 * gameState.currentLevel * gameState.comboMultiplier;
+      
+      // Update combo
+      updateCombo(true);
+      
+      // Play correct sound
+      audio.correct.play();
+      
+      // Update UI
+      updateStats();
+      showFeedback("BENAR!", true);
+      
+      // Attack monster
+      attackMonster();
+      
+      // Generate new question
+      generateQuestion();
+      
+      // Check for victory
+      if (gameState.correctStreak >= 5) {
+        defeatMonster();
+      }
+    }
+
+    function handleWrongAnswer() {
+      gameState.wrongStreak++;
+      gameState.correctStreak = 0;
+      gameState.score = Math.max(0, gameState.score - 2);
+      
+      // Reset combo
+      updateCombo(false);
+      
+      // Play wrong sound
+      audio.wrong.play();
+      
+      // Update UI
+      updateStats();
+      showFeedback("SALAH!", false);
+      
+      // Monster counterattack
+      if (gameState.wrongStreak >= 3) {
+        monsterAttack();
+      }
+      
+      // Generate new question
+      generateQuestion();
+    }
+
+    // Combo System
+    function updateCombo(isCorrect) {
+      if (isCorrect) {
+        gameState.comboTimeLeft = gameState.maxComboTime;
+        gameState.comboMultiplier = 1 + Math.floor(gameState.correctStreak / 3);
+      } else {
+        gameState.comboTimeLeft = 0;
+        gameState.comboMultiplier = 1;
+      }
+      updateComboMeter();
+    }
+
+    function updateComboMeter() {
+      const percentage = (gameState.comboTimeLeft / gameState.maxComboTime) * 100;
+      elements.comboFill.style.width = `${percentage}%`;
+      
+      // Visual feedback for combo
+      if (gameState.comboMultiplier > 1) {
+        elements.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--secondary))`;
+        elements.streakValue.style.color = 'var(--secondary)';
+        elements.streakValue.style.textShadow = '0 0 10px var(--secondary)';
+      } else {
+        elements.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--primary-dark))`;
+        elements.streakValue.style.color = 'var(--primary)';
+        elements.streakValue.style.textShadow = 'none';
+      }
+    }
+
+    // Combat Functions
+    function attackMonster() {
+      const element = gameState.elements[gameState.activeElement];
+      const projectile = elements[element.projectile];
+      
+      // Play shoot sound
+      audio.shoot.play();
+      
+      // Animate projectile
+      gsap.fromTo(projectile, 
+        { x: 200, y: 0, opacity: 1, display: 'block' },
+        {
+          x: 700,
+          duration: 0.5,
+          ease: "power1.out",
+          onComplete: () => {
+            projectile.style.display = 'none';
+            
+            // Play hit sound
+            audio.hit.play();
+            
+            // Calculate damage with element advantage
+            let damage = 10 + (gameState.correctStreak * 2) * gameState.comboMultiplier;
+            
+            // Element advantage system
+            const monsterElement = Object.keys(gameState.elements)[Math.floor(Math.random() * 3)];
+            
+            if (element.strongAgainst === monsterElement) {
+              damage *= 1.5;
+              showDamageIndicator(damage, "CRITICAL!", "#FFD700");
+            } else if (element.weakTo === monsterElement) {
+              damage *= 0.75;
+              showDamageIndicator(damage, "WEAK!", "#AAAAAA");
+            } else {
+              showDamageIndicator(damage, "", element.color);
+            }
+            
+            // Deal damage
+            gameState.monsterHealth = Math.max(0, gameState.monsterHealth - damage);
+            updateHealthBars();
+            
+            // Shake monster
+            gsap.to(elements.monster, { 
+              x: 10,
+              duration: 0.1,
+              yoyo: true,
+              repeat: 5,
+              onComplete: () => {
+                gsap.to(elements.monster, { x: 0, duration: 0.1 });
+              }
+            });
+            
+            // Check if monster is defeated
+            if (gameState.monsterHealth <= 0) {
+              defeatMonster();
+            }
+          }
+        }
+      );
+    }
+
+    function monsterAttack() {
+      // Shake wizard
+      gsap.to(elements.wizard, { 
+        x: 10,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 5,
+        onComplete: () => {
+          gsap.to(elements.wizard, { x: 0, duration: 0.1 });
+        }
+      });
+      
+      // Calculate damage
+      const damage = 15 + (gameState.currentLevel * 2);
+      showDamageIndicator(damage, "", "#FF0000", true);
+      
+      // Deal damage
+      gameState.wizardHealth = Math.max(0, gameState.wizardHealth - damage);
+      updateHealthBars();
+      
+      // Play hit sound
+      audio.hit.play();
+      
+      // Check if wizard is defeated
+      if (gameState.wizardHealth <= 0) {
+        defeatWizard();
+      }
+    }
+
+    function showDamageIndicator(amount, text, color, isWizard = false) {
+      const indicator = document.createElement('div');
+      indicator.className = 'damage-indicator';
+      indicator.textContent = `${text} ${Math.round(amount)}`;
+      indicator.style.color = color;
+      indicator.style.left = isWizard ? '150px' : '650px';
+      indicator.style.bottom = '250px';
+      document.getElementById('game-screen').appendChild(indicator);
+      
+      // Animate
+      setTimeout(() => {
+        indicator.remove();
+      }, 1000);
+    }
+
+    // Game State Updates
+    function updateStats() {
+      elements.scoreValue.textContent = gameState.score;
+      elements.streakValue.textContent = gameState.correctStreak;
+      elements.levelValue.textContent = gameState.currentLevel;
+    }
+
+    function updateHealthBars() {
+      const wizardPercentage = (gameState.wizardHealth / gameState.maxWizardHealth) * 100;
+      const monsterPercentage = (gameState.monsterHealth / gameState.maxMonsterHealth) * 100;
+      
+      elements.wizardHealth.style.width = `${wizardPercentage}%`;
+      elements.monsterHealth.style.width = `${monsterPercentage}%`;
+      
+      // Color feedback
+      if (wizardPercentage < 30) {
+        elements.wizardHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      } else if (wizardPercentage < 60) {
+        elements.wizardHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      }
+      
+      if (monsterPercentage < 30) {
+        elements.monsterHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      } else if (monsterPercentage < 60) {
+        elements.monsterHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      }
+    }
+
+    function resetTimer() {
+      gameState.timeLeft = 30;
+      updateTimerDisplay();
+    }
+
+    // Feedback Functions
+    function showFeedback(message, isCorrect) {
+      const feedback = document.createElement('div');
+      feedback.textContent = message;
+      feedback.style.position = 'absolute';
+      feedback.style.left = '50%';
+      feedback.style.top = '30%';
+      feedback.style.transform = 'translateX(-50%)';
+      feedback.style.fontSize = '2.5rem';
+      feedback.style.fontWeight = 'bold';
+      feedback.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+      feedback.style.textShadow = '0 0 10px rgba(0, 0, 0, 0.8)';
+      feedback.style.zIndex = '20';
+      feedback.style.pointerEvents = 'none';
+      document.getElementById('game-screen').appendChild(feedback);
+      
+      // Animate feedback
+      gsap.fromTo(feedback,
+        { y: 0, opacity: 1, scale: 0.8 },
+        {
+          y: -50,
+          opacity: 0,
+          scale: 1.2,
+          duration: 1,
+          ease: "power1.out",
+          onComplete: () => feedback.remove()
+        }
+      );
+      
+      // Additional effects for correct answers
+      if (isCorrect) {
+        createConfetti();
+      }
+    }
+
+    function createConfetti() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.top = `${Math.random() * 100}%`;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.getElementById('game-screen').appendChild(confetti);
+        
+        // Animate confetti
+        gsap.to(confetti, {
+          y: `+=${Math.random() * 200 + 100}`,
+          x: `+=${(Math.random() - 0.5) * 200}`,
+          opacity: 0,
+          duration: 1 + Math.random(),
+          ease: "power1.out",
+          onComplete: () => confetti.remove()
+        });
+      }
+    }
+
+    // End Game Functions
+    function defeatMonster() {
+      gameState.gameActive = false;
+      clearInterval(gameState.timerInterval);
+      audio.win.play();
+      
+      // Animate monster defeat
+      gsap.to(elements.monster, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power1.in",
+        onComplete: showVictory
+      });
+      
+      // Victory effects
+      createConfetti();
+    }
+
+    function defeatWizard() {
+      gameState.gameActive = false;
+      clearInterval(gameState.timerInterval);
+      audio.lose.play();
+      
+      // Animate wizard defeat
+      gsap.to(elements.wizard, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power1.in",
+        onComplete: showGameOver
+      });
+    }
+
+    function showVictory() {
+      elements.finalScore.textContent = gameState.score;
+      elements.victoryModal.classList.add('active');
+    }
+
+    function showGameOver() {
+      elements.gameoverScore.textContent = gameState.score;
+      elements.gameoverModal.classList.add('active');
+    }
+
+    function nextLevel() {
+      elements.victoryModal.classList.remove('active');
+      
+      // Increase level
+      gameState.currentLevel++;
+      
+      // Increase monster health
+      gameState.maxMonsterHealth += 50;
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      
+      // Reset streaks
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      
+      // Reset wizard health
+      gameState.wizardHealth = gameState.maxWizardHealth;
+      
+      // Start game again
+      gameState.gameActive = true;
+      startTimer();
+      generateQuestion();
+      updateStats();
+      updateHealthBars();
+      
+      // Show level up message
+      showFeedback(`LEVEL ${gameState.currentLevel}!`, true);
+    }
+
+    // Restart Game
+    function restartGame() {
+      elements.victoryModal.classList.remove('active');
+      elements.gameoverModal.classList.remove('active');
+      
+      // Reset game state
+      gameState.score = 0;
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      gameState.wizardHealth = gameState.maxWizardHealth;
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      gameState.currentLevel = 1;
+      gameState.timeLeft = 30;
+      gameState.comboTimeLeft = 0;
+      gameState.comboMultiplier = 1;
+      gameState.gameActive = true;
+      
+      // Reset UI
+      updateStats();
+      updateHealthBars();
+      updateComboMeter();
+      
+      // Show characters
+      elements.wizard.style.opacity = '1';
+      elements.wizard.style.transform = 'translateY(0)';
+      elements.monster.style.opacity = '1';
+      elements.monster.style.transform = 'translateY(0)';
+      
+      // Start timer
+      startTimer();
+      
+      // Generate new question
+      generateQuestion();
+    }
+
+
+    function defeatMonster() {
+  gameState.gameActive = false;
+  clearInterval(gameState.timerInterval);
+  audio.win.play();
+  
+  // Animate monster defeat
+  gsap.to(elements.monster, {
+    y: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power1.in",
+    onComplete: showLevelComplete
+  });
+  
+  // Victory effects
+  createConfetti();
+}
+
+function showLevelComplete() {
+  document.getElementById('level-score span').textContent = gameState.score;
+  document.getElementById('level-complete-modal').classList.add('active');
+}
+
+function prepareNextLevel() {
+  // Increase level
+  gameState.currentLevel++;
+  
+  // Reset monster with increased stats
+  gameState.maxMonsterHealth = 150 + (gameState.currentLevel * 25);
+  gameState.monsterHealth = gameState.maxMonsterHealth;
+  
+  // Reset streaks
+  gameState.correctStreak = 0;
+  gameState.wrongStreak = 0;
+  
+  // Reset timer
+  gameState.timeLeft = 30;
+  
+  // Show level up message
+  showFeedback(`LEVEL ${gameState.currentLevel}!`, true);
+  
+  // Update UI
+  updateStats();
+  updateHealthBars();
+  
+  // Reset monster position
+  elements.monster.style.opacity = '1';
+  elements.monster.style.transform = 'translateY(0)';
+  
+  // Start game again
+  gameState.gameActive = true;
+  startTimer();
+  generateQuestion();
+}
+
+document.getElementById('continue-btn').addEventListener('click', () => {
+  document.getElementById('level-complete-modal').classList.remove('active');
+  prepareNextLevel();
+});
+
+function generateQuestion() {
+  let num1, num2, operator, answer;
+  const operators = ['+', '-', '*', '/'];
+  
+  // Base difficulty multipliers based on level
+  const levelMultiplier = 1 + (gameState.currentLevel * 0.2);
+  
+  // Generate question based on difficulty and level
+  switch(gameState.difficulty) {
+    case 'easy':
+      num1 = Math.floor(Math.random() * (5 * levelMultiplier)) + 1;
+      num2 = Math.floor(Math.random() * (5 * levelMultiplier)) + 1;
+      operator = operators[Math.floor(Math.random() * 2)]; // + or -
+      break;
+    case 'medium':
+      num1 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+      num2 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+      operator = operators[Math.floor(Math.random() * 3)]; // +, -, or *
+      break;
+    case 'hard':
+      num1 = Math.floor(Math.random() * (15 * levelMultiplier)) + 1;
+      num2 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+      operator = operators[Math.floor(Math.random() * 4)]; // +, -, *, or /
+      break;
+  }
+  
+  // Rest of the function remains the same...
+}
+
+ // Modifikasi fungsi-fungsi berikut:
+
+  // Di dalam initGame(), tambahkan health bar di atas karakter
+  function initGame() {
+    // ... kode sebelumnya ...
+    
+    // Buat health bar di atas karakter
+    const wizardHealthContainer = document.createElement('div');
+    wizardHealthContainer.id = 'wizard-health-container';
+    wizardHealthContainer.className = 'character-health-container';
+    wizardHealthContainer.innerHTML = '<div class="character-health-fill"></div>';
+    document.getElementById('game-container').appendChild(wizardHealthContainer);
+    
+    const monsterHealthContainer = document.createElement('div');
+    monsterHealthContainer.id = 'monster-health-container';
+    monsterHealthContainer.className = 'character-health-container';
+    monsterHealthContainer.innerHTML = '<div class="character-health-fill"></div>';
+    document.getElementById('game-container').appendChild(monsterHealthContainer);
+    
+    // ... kode setelahnya ...
+  }
+
+  // Modifikasi fungsi updateHealthBars()
+  function updateHealthBars() {
+    const wizardPercentage = (gameState.wizardHealth / gameState.maxWizardHealth) * 100;
+    const monsterPercentage = (gameState.monsterHealth / gameState.maxMonsterHealth) * 100;
+    
+    // Update health bar di UI
+    elements.wizardHealth.style.width = `${wizardPercentage}%`;
+    elements.monsterHealth.style.width = `${monsterPercentage}%`;
+    
+    // Update health bar di atas karakter
+    document.querySelector('#wizard-health-container .character-health-fill').style.width = `${wizardPercentage}%`;
+    document.querySelector('#monster-health-container .character-health-fill').style.width = `${monsterPercentage}%`;
+    
+    // Color feedback
+    if (wizardPercentage < 30) {
+      elements.wizardHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      document.querySelector('#wizard-health-container .character-health-fill').style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+    } else if (wizardPercentage < 60) {
+      elements.wizardHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      document.querySelector('#wizard-health-container .character-health-fill').style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+    } else {
+      elements.wizardHealth.style.background = 'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+      document.querySelector('#wizard-health-container .character-health-fill').style.background = 'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+    }
+    
+    if (monsterPercentage < 30) {
+      elements.monsterHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      document.querySelector('#monster-health-container .character-health-fill').style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+    } else if (monsterPercentage < 60) {
+      elements.monsterHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      document.querySelector('#monster-health-container .character-health-fill').style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+    } else {
+      elements.monsterHealth.style.background = 'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+      document.querySelector('#monster-health-container .character-health-fill').style.background = 'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+    }
+  }
+
+  // Modifikasi fungsi showVictory()
+  function showVictory() {
+    elements.finalScore.textContent = gameState.score;
+    
+    // Update teks modal kemenangan berdasarkan level
+    if (gameState.currentLevel < 5) {
+      document.querySelector('#victory-modal .modal-title').textContent = `LEVEL ${gameState.currentLevel} SELESAI!`;
+      document.querySelector('#victory-modal .modal-text').textContent = 
+        `Kamu telah mengalahkan monster level ${gameState.currentLevel}!`;
+      elements.nextLevelBtn.style.display = 'block';
+    } else {
+      document.querySelector('#victory-modal .modal-title').textContent = 'KAMU MENANG!';
+      document.querySelector('#victory-modal .modal-text').textContent = 
+        'Selamat! Kamu telah menyelesaikan semua level permainan!';
+      elements.nextLevelBtn.style.display = 'none';
+    }
+    
+    elements.victoryModal.classList.add('active');
+  }
+
+  // Modifikasi fungsi nextLevel()
+  function nextLevel() {
+    elements.victoryModal.classList.remove('active');
+    
+    // Increase level
+    gameState.currentLevel++;
+    
+    // Increase monster health and damage based on level
+    gameState.maxMonsterHealth = 150 + (gameState.currentLevel * 25);
+    gameState.monsterHealth = gameState.maxMonsterHealth;
+    
+    // Reset streaks
+    gameState.correctStreak = 0;
+    gameState.wrongStreak = 0;
+    
+    // Reset wizard health
+    gameState.wizardHealth = gameState.maxWizardHealth;
+    
+    // Start game again
+    gameState.gameActive = true;
+    startTimer();
+    generateQuestion();
+    updateStats();
+    updateHealthBars();
+    
+    // Show level up message
+    showFeedback(`LEVEL ${gameState.currentLevel}!`, true);
+    
+    // Reset monster position
+    elements.monster.style.opacity = '1';
+    elements.monster.style.transform = 'translateY(0)';
+  }
+
+    // Initialize the game when loaded
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+</body>
+</html>

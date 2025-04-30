@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pertarungan Ajaib Matematika</title>
+  <style>
+    :root {
+      --primary: #8f94fb;
+      --primary-dark: #4e54c8;
+      --secondary: #ff416c;
+      --success: #4CAF50;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --info: #2196F3;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Start Screen */
+    #start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    #title {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(143, 148, 251, 0.3);
+      animation: glow 2s infinite alternate;
+    }
+
+    #subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: #ddd;
+    }
+
+    #instructions {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      line-height: 1.6;
+    }
+
+    /* Game Screen */
+    #game-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 5;
+    }
+
+    /* Battle Arena */
+    #battle-arena {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1000') center/cover;
+      z-index: 2;
+    }
+
+    /* Characters */
+    .character {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      bottom: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 4;
+      transition: all 0.3s ease;
+    }
+
+    #wizard {
+      left: 20px;
+      background-image: url('https://th.bing.com/th/id/OIP.LFRmwBbFeiDKrHdnhWtCWwHaIM?w=164&h=181&c=7&r=0&o=5&dpr=1.1&pid=1.7');
+      filter: drop-shadow(0 0 10px rgba(143, 148, 251, 0.7));
+    }
+
+    #monster {
+      right: 20px;
+      background-image: url('https://th.bing.com/th/id/OIP.k6gNPhwtYnomYgbNc_cCRwHaKe?pid=ImgDet&w=199&h=281&c=7&dpr=1,1');
+      filter: drop-shadow(0 0 10px rgba(255, 65, 108, 0.7));
+      transform: scaleX(-1);
+    }
+
+    /* Projectiles */
+    .projectile {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      bottom: 180px;
+      left: 250px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 3;
+      display: none;
+    }
+
+    #fireball {
+      background-image: url('https://www.textures4photoshop.com/tex/thumbs/fireball-PNG-transparent-background-thumb35.png');
+    }
+
+    #waterball {
+      background-image: url('https://th.bing.com/th/id/R.dbd99180e70101572778188b5ec50af2?rik=ZYbDppeKOl9p%2bA&riu=http%3a%2f%2fclipart-library.com%2fimages_k%2fball-transparent%2fball-transparent-21.png&ehk=alz6agaHZjhP38tyOJQ3rgCWP35MXYoP9aT324XMf%2bs%3d&risl=&pid=ImgRaw&r=0');
+    }
+
+    #natureball {
+      background-image: url('https://i.imgur.com/XyLdQ9m.png');
+    }
+
+    /* UI Elements */
+    #ui-container {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 6;
+    }
+
+    .health-bar-container {
+      width: 200px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    .character-name {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .health-bar {
+      width: 100%;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .health-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--success), #4CAF50);
+      transition: width 0.3s ease;
+    }
+
+    #timer-container {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 15px;
+      border-radius: 50px;
+      backdrop-filter: blur(5px);
+    }
+
+    #timer-icon {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+
+    #timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    #combo-meter {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      overflow: hidden;
+      z-index: 6;
+    }
+
+    #combo-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Question Container */
+    #question-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      z-index: 6;
+    }
+
+    #question-box {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    #question-text {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #answer-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #answer-input {
+      width: 150px;
+      padding: 10px 15px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    #answer-input:focus {
+      outline: none;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    #answer-input.wrong {
+      animation: shake 0.5s;
+      box-shadow: 0 0 10px var(--danger);
+    }
+
+    /* Stats Container */
+    #stats-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 15px;
+      z-index: 6;
+    }
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      padding: 10px 15px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .stat-title {
+      font-size: 0.9rem;
+      color: #ddd;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    /* Element Selection */
+    #element-selector {
+      position: absolute;
+      bottom: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 6;
+    }
+
+    .element-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      color: white;
+    }
+
+    .element-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .element-btn.active {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      margin: 0.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .difficulty-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .difficulty-btn.active {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: white;
+    }
+
+    .difficulty-btn.easy {
+      border-color: var(--success);
+    }
+
+    .difficulty-btn.medium {
+      border-color: var(--warning);
+    }
+
+    .difficulty-btn.hard {
+      border-color: var(--danger);
+    }
+
+    /* Mobile Controls */
+    #mobile-controls {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      display: none;
+    }
+
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #0f2027, #203a43);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .modal-text {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* Damage Indicator */
+    .damage-indicator {
+      position: absolute;
+      font-size: 1.8rem;
+      font-weight: bold;
+      animation: floatUp 1s forwards;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      z-index: 7;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 1;
+      z-index: 10;
+    }
+
+    /* Tier Indicator */
+    .tier-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 20px currentColor;
+      opacity: 0;
+      z-index: 15;
+      animation: tierReveal 2s forwards;
+    }
+
+    /* Animations */
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px var(--primary);
+      }
+      to {
+        text-shadow: 0 0 20px var(--secondary), 0 0 30px var(--primary);
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+
+    @keyframes tierReveal {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #title {
+        font-size: 2.5rem;
+      }
+      
+      #subtitle {
+        font-size: 1.2rem;
+      }
+      
+      #instructions {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+      
+      .character {
+        width: 100px;
+        height: 100px;
+        bottom: 120px;
+      }
+      
+      #wizard {
+        left: 50px;
+      }
+      
+      #monster {
+        right: 50px;
+      }
+      
+      #question-text {
+        font-size: 1.5rem;
+      }
+      
+      #mobile-controls {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Start Screen -->
+    <div id="start-screen">
+      <h1 id="title">PERTARUNGAN AJAIB MATEMATIKA</h1>
+      <p id="subtitle">Kuasai Matematika, Kalahkan Monster!</p>
+      <p id="instructions">
+        Dalam dunia sihir ini, pengetahuan matematikamu adalah senjatamu!<br>
+        Jawab soal matematika dengan benar untuk menyerang monster.<br>
+        Setiap 5 jawaban benar berturut-turut akan mengalahkan monster!<br>
+        Jawaban salah akan membuatmu diserang balik!<br><br>
+        <strong>8 Tingkatan menantang dengan 5 level masing-masing!</strong>
+      </p>
+      <button id="start-btn" class="btn">MULAI PETUALANGAN</button>
+      <div>
+        <p style="margin-bottom: 1rem; font-size: 1.2rem;">Pilih Tingkat Kesulitan:</p>
+        <button class="btn difficulty-btn easy" data-difficulty="easy">Pemula</button>
+        <button class="btn difficulty-btn medium" data-difficulty="medium">Ahli</button>
+        <button class="btn difficulty-btn hard" data-difficulty="hard">Master</button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen">
+      <!-- Battle Arena -->
+      <div id="battle-arena"></div>
+      
+      <!-- UI Elements -->
+      <div id="ui-container">
+        <!-- Health Bars -->
+        <div id="wizard-health" class="health-bar-container">
+          <div class="character-name">Penyihir</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+        
+        <div id="monster-health" class="health-bar-container">
+          <div class="character-name">Monster</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+        
+        <!-- Timer -->
+        <div id="timer-container">
+          <span id="timer-icon">⏱️</span>
+          <span id="timer">30</span>
+        </div>
+        
+        <!-- Combo Meter -->
+        <div id="combo-meter">
+          <div id="combo-fill"></div>
+        </div>
+      </div>
+
+      <!-- Characters -->
+      <div id="wizard" class="character"></div>
+      <div id="monster" class="character"></div>
+      
+      <!-- Projectiles -->
+      <div id="fireball" class="projectile"></div>
+      <div id="waterball" class="projectile"></div>
+      <div id="natureball" class="projectile"></div>
+      
+      <!-- Question Container -->
+      <div id="question-container">
+        <div id="question-box">
+          <div id="question-text">Memuat Pertanyaan...</div>
+          <div id="answer-container">
+            <input type="number" id="answer-input" placeholder="Jawaban" />
+            <button id="submit-answer" class="btn">SERANG!</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Container -->
+      <div id="stats-container">
+        <div class="stat-box">
+          <div class="stat-title">Skor</div>
+          <div id="score-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Streak</div>
+          <div id="streak-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Level</div>
+          <div id="level-value" class="stat-value">1</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Tingkat</div>
+          <div id="tier-value" class="stat-value">1</div>
+        </div>
+      </div>
+      
+      <!-- Element Selection -->
+      <div id="element-selector">
+        <button id="fire-btn" class="element-btn active" data-element="FIRE">🔥</button>
+        <button id="water-btn" class="element-btn" data-element="WATER">💧</button>
+        <button id="nature-btn" class="element-btn" data-element="NATURE">🌿</button>
+      </div>
+      
+      <!-- Mobile Controls -->
+      <div id="mobile-controls">
+        <button id="mobile-attack" class="btn">Serang</button>
+      </div>
+    </div>
+    
+    <!-- Level Complete Modal -->
+    <div id="level-complete-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">LEVEL SELESAI!</h2>
+        <p class="modal-text">Selamat! Kamu telah menyelesaikan level ini!</p>
+        <p id="level-score" class="modal-text">Skor Level: <span>0</span></p>
+        <button id="continue-btn" class="btn">Lanjut ke Level Berikutnya</button>
+      </div>
+    </div>
+    
+    <!-- Tier Complete Modal -->
+    <div id="tier-complete-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">TINGKAT SELESAI!</h2>
+        <p class="modal-text">Hebat! Kamu telah menyelesaikan seluruh level di tingkat ini!</p>
+        <p id="tier-score" class="modal-text">Total Skor: <span>0</span></p>
+        <button id="next-tier-btn" class="btn">Lanjut ke Tingkat Berikutnya</button>
+      </div>
+    </div>
+    
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">KAMU MENANG!</h2>
+        <p class="modal-text">Kamu telah mengalahkan semua monster dengan kekuatan matematikamu!</p>
+        <p id="final-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        <button id="restart-btn" class="btn" style="margin-top: 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark))">Main Lagi</button>
+      </div>
+    </div>
+    
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">GAME OVER</h2>
+        <p class="modal-text">Monster terlalu kuat untukmu saat ini. Tingkatkan kemampuan matematikamu dan coba lagi!</p>
+        <p id="gameover-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        <button id="try-again-btn" class="btn">Coba Lagi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="shoot-sound" src="https://www.soundjay.com/mechanical/sounds/laser-01.mp3"></audio>
+  <audio id="hit-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3"></audio>
+  <audio id="win-sound" src="https://www.soundjay.com/misc/sounds/magic-chime-02.mp3"></audio>
+  <audio id="lose-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-02.mp3"></audio>
+  <audio id="background-music" loop src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  <audio id="element-change-sound" src="https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3"></audio>
+  <audio id="level-up-sound" src="https://www.soundjay.com/misc/sounds/magic-chime-03.mp3"></audio>
+  <audio id="tier-up-sound" src="https://www.soundjay.com/misc/sounds/magic-chime-04.mp3"></audio>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Enhanced Game State
+    const gameState = {
+      score: 0,
+      correctStreak: 0,
+      wrongStreak: 0,
+      difficulty: "medium",
+      wizardHealth: 100,
+      maxWizardHealth: 100,
+      monsterHealth: 150,
+      maxMonsterHealth: 150,
+      currentLevel: 1,
+      currentTier: 1,
+      gameActive: false,
+      timeLeft: 30,
+      timerInterval: null,
+      elements: {
+        FIRE: { 
+          name: "Api", 
+          emoji: "🔥", 
+          color: "#ff416c",
+          weakTo: 'WATER', 
+          strongAgainst: 'NATURE',
+          projectile: 'fireball'
+        },
+        WATER: { 
+          name: "Air", 
+          emoji: "💧", 
+          color: "#1a8cff",
+          weakTo: 'NATURE', 
+          strongAgainst: 'FIRE',
+          projectile: 'waterball'
+        },
+        NATURE: { 
+          name: "Alam", 
+          emoji: "🌿", 
+          color: "#4CAF50",
+          weakTo: 'FIRE', 
+          strongAgainst: 'WATER',
+          projectile: 'natureball'
+        }
+      },
+      activeElement: 'FIRE',
+      currentQuestion: null,
+      correctAnswer: null,
+      questionHistory: [],
+      comboTimeLeft: 0,
+      maxComboTime: 5,
+      comboMultiplier: 1,
+      maxTiers: 8,
+      levelsPerTier: 5
+    };
+
+    // DOM Elements
+    const elements = {
+      startScreen: document.getElementById('start-screen'),
+      gameScreen: document.getElementById('game-screen'),
+      wizard: document.getElementById('wizard'),
+      monster: document.getElementById('monster'),
+      fireball: document.getElementById('fireball'),
+      waterball: document.getElementById('waterball'),
+      natureball: document.getElementById('natureball'),
+      questionText: document.getElementById('question-text'),
+      answerInput: document.getElementById('answer-input'),
+      submitBtn: document.getElementById('submit-answer'),
+      scoreValue: document.getElementById('score-value'),
+      streakValue: document.getElementById('streak-value'),
+      levelValue: document.getElementById('level-value'),
+      tierValue: document.getElementById('tier-value'),
+      wizardHealth: document.querySelector('#wizard-health .health-fill'),
+      monsterHealth: document.querySelector('#monster-health .health-fill'),
+      startBtn: document.getElementById('start-btn'),
+      fireBtn: document.getElementById('fire-btn'),
+      waterBtn: document.getElementById('water-btn'),
+      natureBtn: document.getElementById('nature-btn'),
+      difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+      mobileAttackBtn: document.getElementById('mobile-attack'),
+      timer: document.getElementById('timer'),
+      comboFill: document.getElementById('combo-fill'),
+      levelCompleteModal: document.getElementById('level-complete-modal'),
+      tierCompleteModal: document.getElementById('tier-complete-modal'),
+      victoryModal: document.getElementById('victory-modal'),
+      gameoverModal: document.getElementById('gameover-modal'),
+      levelScore: document.getElementById('level-score span'),
+      tierScore: document.getElementById('tier-score span'),
+      finalScore: document.getElementById('final-score span'),
+      gameoverScore: document.getElementById('gameover-score span'),
+      continueBtn: document.getElementById('continue-btn'),
+      nextTierBtn: document.getElementById('next-tier-btn'),
+      restartBtn: document.getElementById('restart-btn'),
+      tryAgainBtn: document.getElementById('try-again-btn')
+    };
+
+    // Audio
+    const audio = {
+      shoot: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/laser-01.mp3'] }),
+      hit: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-01.mp3'] }),
+      win: new Howl({ src: ['https://www.soundjay.com/misc/sounds/magic-chime-02.mp3'] }),
+      lose: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-02.mp3'] }),
+      bgm: new Howl({ 
+        src: ['https://www.soundjay.com/misc/sounds/magic-chime-01.mp3'],
+        loop: true,
+        volume: 0.3
+      }),
+      correct: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-09.mp3'] }),
+      wrong: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-10.mp3'] }),
+      elementChange: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3'], volume: 0.5 }),
+      levelUp: new Howl({ src: ['https://www.soundjay.com/misc/sounds/magic-chime-03.mp3'] }),
+      tierUp: new Howl({ src: ['https://www.soundjay.com/misc/sounds/magic-chime-04.mp3'] })
+    };
+    
+
+    // Initialize Game
+    function initGame() {
+      // Initialize particles
+      particlesJS('particles-js', {
+        particles: {
+          number: { value: 80, density: { enable: true, value_area: 800 } },
+          color: { value: "#8f94fb" },
+          shape: { type: "circle" },
+          opacity: { value: 0.5, random: true },
+          size: { value: 3, random: true },
+          line_linked: { enable: true, distance: 150, color: "#8f94fb", opacity: 0.4, width: 1 },
+          move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "repulse" },
+            onclick: { enable: true, mode: "push" }
+          }
+        }
+      });
+
+      // Event Listeners
+      elements.startBtn.addEventListener('click', startGame);
+      elements.submitBtn.addEventListener('click', checkAnswer);
+      elements.answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+      });
+      elements.mobileAttackBtn.addEventListener('click', checkAnswer);
+      
+      // Element Selection
+      elements.fireBtn.addEventListener('click', () => changeElement('FIRE'));
+      elements.waterBtn.addEventListener('click', () => changeElement('WATER'));
+      elements.natureBtn.addEventListener('click', () => changeElement('NATURE'));
+      
+      // Difficulty Selection
+      elements.difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          gameState.difficulty = btn.dataset.difficulty;
+          elements.difficultyBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+      
+      // Modal Buttons
+      elements.continueBtn.addEventListener('click', nextLevel);
+      elements.nextTierBtn.addEventListener('click', nextTier);
+      elements.restartBtn.addEventListener('click', restartGame);
+      elements.tryAgainBtn.addEventListener('click', restartGame);
+      
+      // Set default difficulty
+      document.querySelector('.difficulty-btn.medium').classList.add('active');
+      
+      // Initialize UI
+      updateHealthBars();
+      updateStats();
+    }
+
+    // Start Game
+    function startGame() {
+      elements.startScreen.style.display = 'none';
+      elements.gameScreen.style.display = 'block';
+      gameState.gameActive = true;
+      
+      // Reset game state
+      gameState.score = 0;
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      gameState.wizardHealth = gameState.maxWizardHealth;
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      gameState.currentLevel = 1;
+      gameState.currentTier = 1;
+      gameState.timeLeft = 30;
+      gameState.comboTimeLeft = 0;
+      gameState.comboMultiplier = 1;
+      
+      // Start background music
+      audio.bgm.play();
+      
+      // Start timer
+      startTimer();
+      
+      // Generate first question
+      generateQuestion();
+      
+      // Update UI
+      updateStats();
+      updateHealthBars();
+      updateComboMeter();
+      
+      // Show tier intro
+      showTierIntro();
+    }
+
+    // Show Tier Intro Animation
+    function showTierIntro() {
+      const tierIndicator = document.createElement('div');
+      tierIndicator.className = 'tier-indicator';
+      tierIndicator.textContent = `Tingkat ${gameState.currentTier}`;
+      document.getElementById('game-screen').appendChild(tierIndicator);
+      
+      // Play tier sound
+      audio.tierUp.play();
+      
+      // Remove after animation
+      setTimeout(() => {
+        tierIndicator.remove();
+      }, 2000);
+    }
+
+    // Game Timer
+    function startTimer() {
+      clearInterval(gameState.timerInterval);
+      gameState.timeLeft = 30;
+      updateTimerDisplay();
+      
+      gameState.timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        updateTimerDisplay();
+        
+        if (gameState.timeLeft <= 0) {
+          clearInterval(gameState.timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      elements.timer.textContent = gameState.timeLeft;
+      
+      // Visual feedback when time is running out
+      if (gameState.timeLeft <= 10) {
+        elements.timer.style.color = 'var(--danger)';
+        if (gameState.timeLeft <= 5) {
+          gsap.to(elements.timer, { 
+            scale: 1.2, 
+            duration: 0.3, 
+            yoyo: true, 
+            repeat: 1 
+          });
+        }
+      } else {
+        elements.timer.style.color = 'white';
+      }
+    }
+
+    function handleTimeOut() {
+      showFeedback("Waktu Habis!", false);
+      handleWrongAnswer();
+      startTimer(); // Reset timer for next question
+    }
+
+    // Element System
+    function changeElement(element) {
+      if (!gameState.gameActive) return;
+      
+      gameState.activeElement = element;
+      audio.elementChange.play();
+      
+      // Update active button
+      elements.fireBtn.classList.remove('active');
+      elements.waterBtn.classList.remove('active');
+      elements.natureBtn.classList.remove('active');
+      
+      const activeBtn = elements[`${element.toLowerCase()}Btn`];
+      activeBtn.classList.add('active');
+      
+      // Visual feedback
+      gsap.to(activeBtn, {
+        scale: 1.2,
+        duration: 0.3,
+        yoyo: true,
+        repeat: 1
+      });
+      
+      showFeedback(`Elemen ${gameState.elements[element].name} Aktif!`, true);
+    }
+
+    // Generate Math Question
+    function generateQuestion() {
+      let num1, num2, operator, answer;
+      const operators = ['+', '-', '*', '/'];
+      
+      // Calculate difficulty multiplier based on tier and level
+      const tierMultiplier = 1 + (gameState.currentTier - 1) * 0.5;
+      const levelMultiplier = 1 + ((gameState.currentLevel - 1) / gameState.levelsPerTier) * 0.5;
+      const totalMultiplier = tierMultiplier * levelMultiplier;
+      
+      // Generate question based on difficulty and level
+      switch(gameState.difficulty) {
+        case 'easy':
+          num1 = Math.floor(Math.random() * (5 * totalMultiplier)) + 1;
+          num2 = Math.floor(Math.random() * (5 * totalMultiplier)) + 1;
+          operator = operators[Math.floor(Math.random() * 2)]; // + or -
+          break;
+        case 'medium':
+          num1 = Math.floor(Math.random() * (10 * totalMultiplier)) + 1;
+          num2 = Math.floor(Math.random() * (10 * totalMultiplier)) + 1;
+          operator = operators[Math.floor(Math.random() * 3)]; // +, -, or *
+          break;
+        case 'hard':
+          num1 = Math.floor(Math.random() * (15 * totalMultiplier)) + 1;
+          num2 = Math.floor(Math.random() * (10 * totalMultiplier)) + 1;
+          operator = operators[Math.floor(Math.random() * 4)]; // +, -, *, or /
+          break;
+      }
+      
+      // Ensure division problems result in whole numbers
+      if (operator === '/') {
+        const product = num1 * num2;
+        num1 = product;
+        answer = num2;
+      } else {
+        answer = eval(`${num1} ${operator} ${num2}`);
+      }
+      
+      // Format question text
+      let questionText;
+      if (operator === '*') {
+        questionText = `Berapakah ${num1} × ${num2}?`;
+      } else if (operator === '/') {
+        questionText = `Berapakah ${num1} ÷ ${num2}?`;
+      } else {
+        questionText = `Berapakah ${num1} ${operator} ${num2}?`;
+      }
+      
+      elements.questionText.textContent = questionText;
+      gameState.correctAnswer = answer;
+      
+      // Reset timer for this question
+      resetTimer();
+      
+      return answer;
+    }
+
+    // Check Answer
+    function checkAnswer() {
+      if (!gameState.gameActive) return;
+      
+      const userAnswer = parseFloat(elements.answerInput.value);
+      
+      if (isNaN(userAnswer)) {
+        showFeedback("Masukkan jawaban yang valid!", false);
+        elements.answerInput.classList.add('wrong');
+        setTimeout(() => elements.answerInput.classList.remove('wrong'), 500);
+        return;
+      }
+      
+      // Check if answer is correct (with tolerance for floating point)
+      const isCorrect = Math.abs(userAnswer - gameState.correctAnswer) < 0.0001;
+      
+      if (isCorrect) {
+        handleCorrectAnswer();
+      } else {
+        handleWrongAnswer();
+      }
+      
+      // Clear input
+      elements.answerInput.value = '';
+      elements.answerInput.focus();
+    }
+
+    function handleCorrectAnswer() {
+      gameState.correctStreak++;
+      gameState.wrongStreak = 0;
+      gameState.score += 5 * gameState.currentLevel * gameState.comboMultiplier;
+      
+      // Update combo
+      updateCombo(true);
+      
+      // Play correct sound
+      audio.correct.play();
+      
+      // Update UI
+      updateStats();
+      showFeedback("BENAR!", true);
+      
+      // Attack monster
+      attackMonster();
+      
+      // Generate new question
+      generateQuestion();
+      
+      // Check for victory
+      if (gameState.correctStreak >= 5) {
+        defeatMonster();
+      }
+    }
+
+    function handleWrongAnswer() {
+      gameState.wrongStreak++;
+      gameState.correctStreak = 0;
+      gameState.score = Math.max(0, gameState.score - 2);
+      
+      // Reset combo
+      updateCombo(false);
+      
+      // Play wrong sound
+      audio.wrong.play();
+      
+      // Update UI
+      updateStats();
+      showFeedback("SALAH!", false);
+      
+      // Monster counterattack
+      if (gameState.wrongStreak >= 3) {
+        monsterAttack();
+      }
+      
+      // Generate new question
+      generateQuestion();
+    }
+
+    // Combo System
+    function updateCombo(isCorrect) {
+      if (isCorrect) {
+        gameState.comboTimeLeft = gameState.maxComboTime;
+        gameState.comboMultiplier = 1 + Math.floor(gameState.correctStreak / 3);
+      } else {
+        gameState.comboTimeLeft = 0;
+        gameState.comboMultiplier = 1;
+      }
+      updateComboMeter();
+    }
+
+    function updateComboMeter() {
+      const percentage = (gameState.comboTimeLeft / gameState.maxComboTime) * 100;
+      elements.comboFill.style.width = `${percentage}%`;
+      
+      // Visual feedback for combo
+      if (gameState.comboMultiplier > 1) {
+        elements.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--secondary))`;
+        elements.streakValue.style.color = 'var(--secondary)';
+        elements.streakValue.style.textShadow = '0 0 10px var(--secondary)';
+      } else {
+        elements.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--primary-dark))`;
+        elements.streakValue.style.color = 'var(--primary)';
+        elements.streakValue.style.textShadow = 'none';
+      }
+    }
+
+    // Combat Functions
+    function attackMonster() {
+      const element = gameState.elements[gameState.activeElement];
+      const projectile = elements[element.projectile];
+      
+      // Play shoot sound
+      audio.shoot.play();
+      
+      // Animate projectile
+      gsap.fromTo(projectile, 
+        { x: 200, y: 0, opacity: 1, display: 'block' },
+        {
+          x: 700,
+          duration: 0.5,
+          ease: "power1.out",
+          onComplete: () => {
+            projectile.style.display = 'none';
+            
+            // Play hit sound
+            audio.hit.play();
+            
+            // Calculate damage with element advantage
+            let damage = 10 + (gameState.correctStreak * 2) * gameState.comboMultiplier;
+            
+            // Element advantage system
+            const monsterElement = Object.keys(gameState.elements)[Math.floor(Math.random() * 3)];
+            
+            if (element.strongAgainst === monsterElement) {
+              damage *= 1.5;
+              showDamageIndicator(damage, "CRITICAL!", "#FFD700");
+            } else if (element.weakTo === monsterElement) {
+              damage *= 0.75;
+              showDamageIndicator(damage, "WEAK!", "#AAAAAA");
+            } else {
+              showDamageIndicator(damage, "", element.color);
+            }
+            
+            // Deal damage
+            gameState.monsterHealth = Math.max(0, gameState.monsterHealth - damage);
+            updateHealthBars();
+            
+            // Shake monster
+            gsap.to(elements.monster, { 
+              x: 10,
+              duration: 0.1,
+              yoyo: true,
+              repeat: 5,
+              onComplete: () => {
+                gsap.to(elements.monster, { x: 0, duration: 0.1 });
+              }
+            });
+            
+            // Check if monster is defeated
+            if (gameState.monsterHealth <= 0) {
+              defeatMonster();
+            }
+          }
+        }
+      );
+    }
+
+    function monsterAttack() {
+      // Shake wizard
+      gsap.to(elements.wizard, { 
+        x: 10,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 5,
+        onComplete: () => {
+          gsap.to(elements.wizard, { x: 0, duration: 0.1 });
+        }
+      });
+      
+      // Calculate damage
+      const damage = 15 + (gameState.currentLevel * 2);
+      showDamageIndicator(damage, "", "#FF0000", true);
+      
+      // Deal damage
+      gameState.wizardHealth = Math.max(0, gameState.wizardHealth - damage);
+      updateHealthBars();
+      
+      // Play hit sound
+      audio.hit.play();
+      
+      // Check if wizard is defeated
+      if (gameState.wizardHealth <= 0) {
+        defeatWizard();
+      }
+    }
+
+    function showDamageIndicator(amount, text, color, isWizard = false) {
+      const indicator = document.createElement('div');
+      indicator.className = 'damage-indicator';
+      indicator.textContent = `${text} ${Math.round(amount)}`;
+      indicator.style.color = color;
+      indicator.style.left = isWizard ? '150px' : '650px';
+      indicator.style.bottom = '250px';
+      document.getElementById('game-screen').appendChild(indicator);
+      
+      // Animate
+      setTimeout(() => {
+        indicator.remove();
+      }, 1000);
+    }
+
+    // Game State Updates
+    function updateStats() {
+      elements.scoreValue.textContent = gameState.score;
+      elements.streakValue.textContent = gameState.correctStreak;
+      elements.levelValue.textContent = gameState.currentLevel;
+      elements.tierValue.textContent = gameState.currentTier;
+    }
+
+    function updateHealthBars() {
+      const wizardPercentage = (gameState.wizardHealth / gameState.maxWizardHealth) * 100;
+      const monsterPercentage = (gameState.monsterHealth / gameState.maxMonsterHealth) * 100;
+      
+      elements.wizardHealth.style.width = `${wizardPercentage}%`;
+      elements.monsterHealth.style.width = `${monsterPercentage}%`;
+      
+      // Color feedback
+      if (wizardPercentage < 30) {
+        elements.wizardHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      } else if (wizardPercentage < 60) {
+        elements.wizardHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      }
+      
+      if (monsterPercentage < 30) {
+        elements.monsterHealth.style.background = 'linear-gradient(90deg, #f00, #ff5e00)';
+      } else if (monsterPercentage < 60) {
+        elements.monsterHealth.style.background = 'linear-gradient(90deg, #ff5e00, #ff0)';
+      }
+    }
+
+    function resetTimer() {
+      gameState.timeLeft = 30;
+      updateTimerDisplay();
+    }
+
+    // Feedback Functions
+    function showFeedback(message, isCorrect) {
+      const feedback = document.createElement('div');
+      feedback.textContent = message;
+      feedback.style.position = 'absolute';
+      feedback.style.left = '50%';
+      feedback.style.top = '30%';
+      feedback.style.transform = 'translateX(-50%)';
+      feedback.style.fontSize = '2.5rem';
+      feedback.style.fontWeight = 'bold';
+      feedback.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+      feedback.style.textShadow = '0 0 10px rgba(0, 0, 0, 0.8)';
+      feedback.style.zIndex = '20';
+      feedback.style.pointerEvents = 'none';
+      document.getElementById('game-screen').appendChild(feedback);
+      
+      // Animate feedback
+      gsap.fromTo(feedback,
+        { y: 0, opacity: 1, scale: 0.8 },
+        {
+          y: -50,
+          opacity: 0,
+          scale: 1.2,
+          duration: 1,
+          ease: "power1.out",
+          onComplete: () => feedback.remove()
+        }
+      );
+      
+      // Additional effects for correct answers
+      if (isCorrect) {
+        createConfetti();
+      }
+    }
+
+    function createConfetti() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.top = `${Math.random() * 100}%`;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.getElementById('game-screen').appendChild(confetti);
+        
+        // Animate confetti
+        gsap.to(confetti, {
+          y: `+=${Math.random() * 200 + 100}`,
+          x: `+=${(Math.random() - 0.5) * 200}`,
+          opacity: 0,
+          duration: 1 + Math.random(),
+          ease: "power1.out",
+          onComplete: () => confetti.remove()
+        });
+      }
+    }
+
+    // End Game Functions
+    function defeatMonster() {
+      gameState.gameActive = false;
+      clearInterval(gameState.timerInterval);
+      audio.win.play();
+      
+      // Animate monster defeat
+      gsap.to(elements.monster, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power1.in",
+        onComplete: () => {
+          // Check if level completed
+          if (gameState.currentLevel < gameState.levelsPerTier) {
+            showLevelComplete();
+          } else {
+            // Check if all tiers completed
+            if (gameState.currentTier < gameState.maxTiers) {
+              showTierComplete();
+            } else {
+              showVictory();
+            }
+          }
+        }
+      });
+      
+      // Victory effects
+      createConfetti();
+    }
+
+    function defeatWizard() {
+      gameState.gameActive = false;
+      clearInterval(gameState.timerInterval);
+      audio.lose.play();
+      
+      // Animate wizard defeat
+      gsap.to(elements.wizard, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power1.in",
+        onComplete: showGameOver
+      });
+    }
+
+    function showLevelComplete() {
+      elements.levelScore.textContent = gameState.score;
+      elements.levelCompleteModal.classList.add('active');
+    }
+
+    function showTierComplete() {
+      elements.tierScore.textContent = gameState.score;
+      elements.tierCompleteModal.classList.add('active');
+    }
+
+    function showVictory() {
+      elements.finalScore.textContent = gameState.score;
+      elements.victoryModal.classList.add('active');
+    }
+
+    function showGameOver() {
+      elements.gameoverScore.textContent = gameState.score;
+      elements.gameoverModal.classList.add('active');
+    }
+
+    function nextLevel() {
+      elements.levelCompleteModal.classList.remove('active');
+      
+      // Increase level
+      gameState.currentLevel++;
+      
+      // Increase monster health
+      gameState.maxMonsterHealth = 150 + (gameState.currentTier * 25) + (gameState.currentLevel * 10);
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      
+      // Reset streaks
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      
+      // Start game again
+      gameState.gameActive = true;
+      startTimer();
+      generateQuestion();
+      updateStats();
+      updateHealthBars();
+      
+      // Reset monster position
+      elements.monster.style.opacity = '1';
+      elements.monster.style.transform = 'translateY(0)';
+      
+      // Show level up message
+      showFeedback(`LEVEL ${gameState.currentLevel}!`, true);
+      audio.levelUp.play();
+    }
+
+    function nextTier() {
+      elements.tierCompleteModal.classList.remove('active');
+      
+      // Increase tier
+      gameState.currentTier++;
+      gameState.currentLevel = 1;
+      
+      // Increase monster health
+      gameState.maxMonsterHealth = 150 + (gameState.currentTier * 25);
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      
+      // Reset streaks
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      
+      // Start game again
+      gameState.gameActive = true;
+      startTimer();
+      generateQuestion();
+      updateStats();
+      updateHealthBars();
+      
+      // Reset monster position
+      elements.monster.style.opacity = '1';
+      elements.monster.style.transform = 'translateY(0)';
+      
+      // Show tier intro
+      showTierIntro();
+    }
+
+    // Restart Game
+    function restartGame() {
+      elements.levelCompleteModal.classList.remove('active');
+      elements.tierCompleteModal.classList.remove('active');
+      elements.victoryModal.classList.remove('active');
+      elements.gameoverModal.classList.remove('active');
+      
+      // Reset game state
+      gameState.score = 0;
+      gameState.correctStreak = 0;
+      gameState.wrongStreak = 0;
+      gameState.wizardHealth = gameState.maxWizardHealth;
+      gameState.monsterHealth = gameState.maxMonsterHealth;
+      gameState.currentLevel = 1;
+      gameState.currentTier = 1;
+      gameState.timeLeft = 30;
+      gameState.comboTimeLeft = 0;
+      gameState.comboMultiplier = 1;
+      gameState.gameActive = true;
+      
+      // Reset UI
+      updateStats();
+      updateHealthBars();
+      updateComboMeter();
+      
+      // Show characters
+      elements.wizard.style.opacity = '1';
+      elements.wizard.style.transform = 'translateY(0)';
+      elements.monster.style.opacity = '1';
+      elements.monster.style.transform = 'translateY(0)';
+      
+      // Start timer
+      startTimer();
+      
+      // Generate new question
+      generateQuestion();
+      
+      // Show tier intro
+      showTierIntro();
+    }
+
+
+      // Update fungsi checkAnswer()
+  function checkAnswer() {
+    if (!gameState.gameActive) return;
+    
+    const userAnswer = parseFloat(elements.answerInput.value);
+    
+    if (isNaN(userAnswer)) {
+      showFeedback("Masukkan jawaban yang valid!", false);
+      elements.answerInput.classList.add('wrong');
+      setTimeout(() => elements.answerInput.classList.remove('wrong'), 500);
+      return;
+    }
+    
+    const isCorrect = Math.abs(userAnswer - gameState.correctAnswer) < 0.0001;
+    
+    if (isCorrect) {
+      handleCorrectAnswer();
+    } else {
+      // Jika salah, serang balik ke penyihir
+      handleWrongAnswer();
+      attackWizard();
+    }
+    
+    elements.answerInput.value = '';
+    elements.answerInput.focus();
+  }
+
+  // Update fungsi attackMonster()
+  function attackMonster() {
+    const element = gameState.elements[gameState.activeElement];
+    const projectile = elements[element.projectile];
+    
+    // Atur posisi awal projectile
+    projectile.style.left = '250px';
+    projectile.style.bottom = '180px';
+    projectile.style.display = 'block';
+    
+    audio.shoot.play();
+    
+    gsap.fromTo(projectile, 
+      { x: 200, y: 0, opacity: 1 },
+      {
+        x: 700,
+        duration: 0.5,
+        ease: "power1.out",
+        onComplete: () => {
+          projectile.style.display = 'none';
+          audio.hit.play();
+          
+          let damage = 10 + (gameState.correctStreak * 2) * gameState.comboMultiplier;
+          const monsterElement = Object.keys(gameState.elements)[Math.floor(Math.random() * 3)];
+          
+          if (element.strongAgainst === monsterElement) {
+            damage *= 1.5;
+            showDamageIndicator(damage, "CRITICAL!", "#FFD700");
+          } else if (element.weakTo === monsterElement) {
+            damage *= 0.75;
+            showDamageIndicator(damage, "WEAK!", "#AAAAAA");
+          } else {
+            showDamageIndicator(damage, "", element.color);
+          }
+          
+          gameState.monsterHealth = Math.max(0, gameState.monsterHealth - damage);
+          updateHealthBars();
+          
+          // Jika elemen api, tampilkan efek api di monster
+          if (gameState.activeElement === 'FIRE') {
+            showMonsterFireEffect();
+          }
+          
+          gsap.to(elements.monster, { 
+            x: 10,
+            duration: 0.1,
+            yoyo: true,
+            repeat: 5,
+            onComplete: () => {
+              gsap.to(elements.monster, { x: 0, duration: 0.1 });
+            }
+          });
+          
+          if (gameState.monsterHealth <= 0) {
+            defeatMonster();
+          }
+        }
+      }
+    );
+  }
+
+  // Fungsi baru untuk serangan balik ke penyihir jika jawaban salah
+  function attackWizard() {
+    const element = gameState.elements[gameState.activeElement];
+    const projectile = elements[element.projectile];
+    
+    // Atur posisi awal projectile (dari monster ke penyihir)
+    projectile.style.left = '650px';
+    projectile.style.bottom = '180px';
+    projectile.style.display = 'block';
+    projectile.style.transform = 'scaleX(-1)';
+    
+    audio.shoot.play();
+    
+    gsap.fromTo(projectile, 
+      { x: 700, y: 0, opacity: 1 },
+      {
+        x: 200,
+        duration: 0.5,
+        ease: "power1.out",
+        onComplete: () => {
+          projectile.style.display = 'none';
+          projectile.style.transform = '';
+          audio.hit.play();
+          
+          const damage = 10;
+          showDamageIndicator(damage, "", "#FF0000", true);
+          
+          gameState.wizardHealth = Math.max(0, gameState.wizardHealth - damage);
+          updateHealthBars();
+          
+          gsap.to(elements.wizard, { 
+            x: -10,
+            duration: 0.1,
+            yoyo: true,
+            repeat: 5,
+            onComplete: () => {
+              gsap.to(elements.wizard, { x: 0, duration: 0.1 });
+            }
+          });
+          
+          if (gameState.wizardHealth <= 0) {
+            defeatWizard();
+          }
+        }
+      }
+    );
+  }
+
+  // Fungsi baru untuk efek api pada monster
+  function showMonsterFireEffect() {
+    const fireEffect = document.getElementById('monster-fire');
+    fireEffect.style.left = '650px';
+    fireEffect.style.bottom = '150px';
+    fireEffect.style.opacity = '1';
+    
+    gsap.to(fireEffect, {
+      scale: 1.2,
+      duration: 0.3,
+      yoyo: true,
+      repeat: 3,
+      onComplete: () => {
+        fireEffect.style.opacity = '0';
+      }
+    });
+  }
+
+  // Update fungsi changeElement() untuk animasi tombol yang lebih kecil
+  function changeElement(element) {
+    if (!gameState.gameActive) return;
+    
+    gameState.activeElement = element;
+    audio.elementChange.play();
+    
+    elements.fireBtn.classList.remove('active');
+    elements.waterBtn.classList.remove('active');
+    elements.natureBtn.classList.remove('active');
+    
+    const activeBtn = elements[`${element.toLowerCase()}Btn`];
+    activeBtn.classList.add('active');
+    
+    gsap.to(activeBtn, {
+      scale: 1.1, // Ubah dari 1.2 menjadi 1.1 untuk efek yang lebih kecil
+      duration: 0.2,
+      yoyo: true,
+      repeat: 1
+    });
+    
+    showFeedback(`Elemen ${gameState.elements[element].name} Aktif!`, true);
+  }
+
+
+    // Initialize the game when loaded
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ashar Grosir Parfum Bekasi - Parfum Original Harga Grosir Terbesar di Bekasi</title>
+    <meta name="description" content="Toko parfum original terbesar di Bekasi dengan harga grosir. Menyediakan berbagai merek parfum premium dengan garansi keaslian 100% dan pelayanan terbaik.">
+    <meta name="keywords" content="parfum original bekasi, grosir parfum bekasi, parfum murah bekasi, ashar grosir parfum, parfum branded bekasi, toko parfum terbesar bekasi">
+    <meta name="author" content="Ashar Grosir Parfum">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Ashar Grosir Parfum Bekasi - Parfum Original Harga Grosir">
+    <meta property="og:description" content="Toko parfum original terbesar di Bekasi dengan harga grosir. Garansi keaslian 100% dan pelayanan terbaik.">
+    <meta property="og:image" content="https://ashargrosirparfum.com/images/social-preview.jpg">
+    <meta property="og:url" content="https://ashargrosirparfum.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ashargrosirparfum.com">
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Splide Carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    <!-- CSS -->
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <span class="loader"></span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="https://img.ws.mms.shopee.co.id/id-11134233-7qukz-li6zwmfqas9le9" alt="Ashar Grosir Parfum Logo">
+                <span class="d-none d-sm-inline">Az-zahra <span>Syam </span> Parfum</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="produk.html">Produk</a>
+                    </li>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tentang.html">Tentang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="testimoni.html">Testimoni</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="lokasi.html">Lokasi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="toko.html">Toko</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="kontak.html">Kontak</a>
+                    </li>
+                    
+                </ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#login-modal"><i class="fas fa-user me-1"></i> Login</button>
+                    <a href="#" class="btn btn-light position-relative" data-bs-toggle="modal" data-bs-target="#keranjang-modal">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="product-gallery">
+                                <img src="" class="main-image img-fluid" alt="Product Image">
+                                <div class="thumbnail-container">
+                                    <!-- Thumbnails akan diisi oleh JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="product-details">
+                                <h2 class="product-modal-title"></h2>
+                                <p class="product-modal-brand"></p>
+                                <div class="rating mb-3">
+                                    <!-- Rating stars akan diisi oleh JavaScript -->
+                                    <span class="ms-2 review-count"></span>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="product-modal-price"></span>
+                                    <span class="product-modal-old-price"></span>
+                                    <span class="product-modal-discount"></span>
+                                </div>
+                                <p class="product-modal-description text-muted"></p>
+                                
+                                <div class="product-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Ketersediaan:</span>
+                                        <span class="product-modal-availability meta-value text-success"></span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Jenis:</span>
+                                        <span class="product-modal-type meta-value"></span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Ukuran:</span>
+                                        <span class="meta-value">100ml</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Kategori:</span>
+                                        <span class="product-modal-category meta-value"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="quantity-selector">
+                                    <span class="me-3">Jumlah:</span>
+                                    <button class="quantity-btn">-</button>
+                                    <input type="number" class="quantity-input" value="1" min="1" max="10">
+                                    <button class="quantity-btn">+</button>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary"><i class="fas fa-shopping-cart me-2"></i> Tambah ke Keranjang</button>
+                                    <button class="btn btn-outline-primary"><i class="far fa-heart me-2"></i> Wishlist</button>
+                                </div>
+                                
+                                <div class="share-buttons mt-4">
+                                    <span class="me-2">Bagikan:</span>
+                                    <button class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-facebook-f"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-whatsapp"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-instagram"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fab fa-twitter"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Produk 1 -->
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+    <div class="card product-card h-100">
+        <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+        <div class="product-img-container">
+            <img src="https://a.cdnsbn.com/images/products/l/24513520405.jpg" class="product-img" alt="Baccarat Rouge 540">
+            <span class="badge bg-success badge-availability product-badge">Tersedia</span>
+        </div>
+        <div class="card-body product-body d-flex flex-column">
+            <h5 class="product-title">Baccarat Rouge 540</h5>
+            <p class="product-brand">Maison Francis Kurkdjian</p>
+            <p class="product-type text-muted small">EDP 100ml</p>
+            <div class="rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span class="ms-1 small">(48)</span>
+            </div>
+            <p class="product-description small">Wangian mewah dengan paduan amber dan kayu yang elegan.</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+                <div>
+                    <h5 class="product-price mb-0">Rp 1.250.000</h5>
+                    <small class="product-old-price">Rp 1.800.000</small>
+                </div>
+            </div>
+        </div>
+        <button class="quick-view-btn" 
+                data-bs-toggle="modal" 
+                data-bs-target="#quickViewModal"
+                data-product-title="Baccarat Rouge 540"
+                data-product-brand="Maison Francis Kurkdjian"
+                data-product-price="1.250.000"
+                data-product-old-price="1.800.000"
+                data-product-discount="30"
+                data-product-description="Wangian mewah dengan paduan amber dan kayu yang elegan."
+                data-product-rating="4.5"
+                data-product-reviews="48"
+                data-product-type="EDP 100ml"
+                data-product-availability="Tersedia (Stok: 15)"
+                data-product-category="Parfum Wanita"
+                data-product-images='["https://a.cdnsbn.com/images/products/l/24513520405.jpg","https://images.unsplash.com/photo-1615634262417-ae75cac3d0e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80","https://images.unsplash.com/photo-1594035910387-fea47794261f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"]'>
+            Lihat Detail
+        </button>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="footer" id="kontak">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="footer-logo">
+                    <img src="https://img.ws.mms.shopee.co.id/id-11134233-7qukz-li6zwmfqas9le9" alt="Ashar Grosir Parfum Logo">
+                    <span class="footer-logo-text">Ashar <span>Grosir</span> Parfum</span>
+                </div>
+                <div class="footer-about">
+                    <p>Menjual parfum original dengan harga grosir sejak 2018. Komitmen kami adalah memberikan produk berkualitas dengan pelayanan terbaik kepada pelanggan di seluruh Indonesia.</p>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 footer-col">
+                <h5 class="footer-title">Tautan Cepat</h5>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fas fa-chevron-right"></i> Beranda</a></li>
+                    <li><a href="produk.html"><i class="fas fa-chevron-right"></i> Produk</a></li>
+                    <li><a href="tentang.html"><i class="fas fa-chevron-right"></i> Tentang Kami</a></li>
+                    <li><a href="testimoni.html"><i class="fas fa-chevron-right"></i> Testimoni</a></li>
+                    <li><a href="lokasi.html"><i class="fas fa-chevron-right"></i> Lokasi</a></li>
+                    <li><a href="kontak.html"><i class="fas fa-chevron-right"></i> Kontak</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-3 col-md-4 footer-col">
+                <h5 class="footer-title">Layanan Pelanggan</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Panduan Belanja</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Syarat & Ketentuan</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Kebijakan Privasi</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Pengembalian Produk</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Blog</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-3 col-md-4 footer-col">
+                <h5 class="footer-title">Hubungi Kami</h5>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> RT.001/RW.006, Bekasi Jaya, Kec. Bekasi Tim., Kota Bks, Jawa Barat 17112</li>
+                    <li><i class="fab fa-whatsapp"></i> +62 812-5103-6348</li>
+                    <li><i class="fas fa-phone-alt"></i> (021) 89488240</li>
+                    <li><i class="fas fa-envelope"></i> info@ashargrosirparfum.com</li>
+                    <li><i class="fas fa-clock"></i> Buka setiap hari 09.00-21.00 WIB</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2023 Ashar Grosir Parfum Bekasi. All rights reserved.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="Mastercard">
+                        </div>
+                        <div class="payment-method">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa">
+                        </div>
+                        <div class="payment-method">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/2560px-Logo_dana_blue.svg.png" alt="DANA">
+                        </div>
+                        <div class="payment-method">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/1200px-Logo_ovo_purple.svg.png" alt="OVO">
+                        </div>
+                        <div class="payment-method">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Logo_ShopPay.svg/1200px-Logo_ShopPay.svg.png" alt="ShopeePay">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Back to Top Button -->
+<div class="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</div>
+
+<!-- AI Chatbot Icon -->
+<div class="chatbot-icon" data-bs-toggle="modal" data-bs-target="#chatbotModal">
+    <i class="fas fa-robot"></i>
+</div>
+
+<!-- Chatbot Modal -->
+<div class="modal fade chatbot-modal" id="chatbotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ashar Bot - AI Assistant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="height: 400px; overflow-y: auto;">
+                <div class="chat-message bot-message mb-3">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-primary text-white p-2">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="chat-bubble bot-bubble">
+                                <p class="mb-0">Halo! Saya Ashar Bot, asisten virtual Ashar Grosir Parfum. Ada yang bisa saya bantu?</p>
+                                <div class="chat-time">Baru saja</div>
+                            </div>
+                            <div class="chat-options mt-2">
+                                <div class="chat-option">Cek ketersediaan produk</div>
+                                <div class="chat-option">Info harga grosir</div>
+                                <div class="chat-option">Cara pemesanan</div>
+                                <div class="chat-option">Status pengiriman</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Ketik pesan Anda..." id="chatInput">
+                    <button class="btn btn-primary" type="button" id="chatSendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <!-- JavaScript -->
+    <script>
+       
+document.addEventListener('DOMContentLoaded', function() {
+    // Tangkap event ketika modal akan ditampilkan
+    document.getElementById('quickViewModal').addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget; // Button yang memicu modal
+        const modal = this;
+        
+        // Ekstrak data dari atribut data
+        const title = button.getAttribute('data-product-title');
+        const brand = button.getAttribute('data-product-brand');
+        const price = button.getAttribute('data-product-price');
+        const oldPrice = button.getAttribute('data-product-old-price');
+        const discount = button.getAttribute('data-product-discount');
+        const description = button.getAttribute('data-product-description');
+        const rating = parseFloat(button.getAttribute('data-product-rating'));
+        const reviews = button.getAttribute('data-product-reviews');
+        const type = button.getAttribute('data-product-type');
+        const availability = button.getAttribute('data-product-availability');
+        const category = button.getAttribute('data-product-category');
+        const images = JSON.parse(button.getAttribute('data-product-images'));
+        
+        // Isi data ke dalam modal
+        modal.querySelector('.product-modal-title').textContent = title;
+        modal.querySelector('.product-modal-brand').textContent = 'By ' + brand;
+        modal.querySelector('.product-modal-price').textContent = 'Rp ' + price;
+        modal.querySelector('.product-modal-old-price').textContent = 'Rp ' + oldPrice;
+        modal.querySelector('.product-modal-discount').textContent = discount + '% OFF';
+        modal.querySelector('.product-modal-description').textContent = description;
+        modal.querySelector('.product-modal-type').textContent = type;
+        modal.querySelector('.product-modal-availability').textContent = availability;
+        modal.querySelector('.product-modal-category').textContent = category;
+        modal.querySelector('.review-count').textContent = '(' + reviews + ' Ulasan)';
+        
+        // Set gambar utama
+        const mainImage = modal.querySelector('.main-image');
+        mainImage.src = images[0];
+        mainImage.alt = title;
+        
+        // Set thumbnail
+        const thumbnailContainer = modal.querySelector('.thumbnail-container');
+        thumbnailContainer.innerHTML = ''; // Kosongkan dulu
+        
+        images.forEach((image, index) => {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = image;
+            thumbnail.className = 'thumbnail img-fluid' + (index === 0 ? ' active' : '');
+            thumbnail.alt = 'Thumbnail ' + (index + 1);
+            
+            // Tambahkan event click untuk mengganti gambar utama
+            thumbnail.addEventListener('click', function() {
+                mainImage.src = this.src;
+                modal.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+                this.classList.add('active');
+            });
+            
+            thumbnailContainer.appendChild(thumbnail);
+        });
+        
+        // Set rating stars
+        const ratingContainer = modal.querySelector('.rating');
+        // Hapus stars yang ada
+        while (ratingContainer.firstChild) {
+            if (ratingContainer.firstChild.nodeName === 'I') {
+                ratingContainer.removeChild(ratingContainer.firstChild);
+            } else {
+                break;
+            }
+        }
+        
+        // Tambahkan stars baru
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        
+        for (let i = 0; i < fullStars; i++) {
+            const star = document.createElement('i');
+            star.className = 'fas fa-star';
+            ratingContainer.insertBefore(star, ratingContainer.firstChild);
+        }
+        
+        if (hasHalfStar) {
+            const halfStar = document.createElement('i');
+            halfStar.className = 'fas fa-star-half-alt';
+            ratingContainer.insertBefore(halfStar, ratingContainer.firstChild);
+        }
+        
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        for (let i = 0; i < emptyStars; i++) {
+            const emptyStar = document.createElement('i');
+            emptyStar.className = 'far fa-star';
+            ratingContainer.insertBefore(emptyStar, ratingContainer.firstChild);
+        }
+    });
+});
+
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+<script src="script.js"></script>
+
+</body>
+</html>                                                                                                                                                                                                                                                                                     qq  
