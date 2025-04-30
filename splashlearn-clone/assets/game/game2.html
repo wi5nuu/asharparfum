@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Wizard Battle | Educational Game</title>
+  <style>
+    :root {
+      --primary: #8f94fb;
+      --primary-dark: #4e54c8;
+      --secondary: #00d2ff;
+      --success: #4CAF50;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+    
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Particle Background */
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    
+    /* Screens */
+    .screen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 10;
+      padding: 2rem;
+      background-color: rgba(0, 0, 0, 0.7);
+      transition: opacity 0.5s ease;
+    }
+    
+    #start-screen {
+      opacity: 1;
+    }
+    
+    #game-screen {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* Typography */
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 20px rgba(143, 148, 251, 0.3);
+    }
+    
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+    }
+    
+    /* Buttons */
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    .difficulty-btn {
+      min-width: 120px;
+    }
+    
+    .easy {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    }
+    
+    .medium {
+      background: linear-gradient(135deg, #2196F3, #0D47A1);
+    }
+    
+    .hard {
+      background: linear-gradient(135deg, #f44336, #b71c1c);
+    }
+    
+    .active {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Game Elements */
+    #battle-arena {
+      position: absolute;
+      width: 100%;
+      height: 60%;
+      bottom: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    }
+    
+    .character {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      bottom: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 5;
+    }
+    
+    #wizard {
+      left: 200px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/3985/3985153.png');
+    }
+    
+    #monster {
+      right: 200px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/3985/3985278.png');
+      transform: scaleX(-1);
+    }
+    
+    .projectile {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      bottom: 180px;
+      left: 250px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      display: none;
+      z-index: 6;
+    }
+    
+    #fireball {
+      background-image: url('https://cdn-icons-png.flaticon.com/512/869/869869.png');
+    }
+    
+    #waterball {
+      background-image: url('https://cdn-icons-png.flaticon.com/512/869/869887.png');
+    }
+    
+    #natureball {
+      background-image: url('https://cdn-icons-png.flaticon.com/512/2906/2906274.png');
+    }
+    
+    /* UI Elements */
+    #ui-container {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+    }
+    
+    .health-bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 10px;
+    }
+    
+    .character-name {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    }
+    
+    .health-bar {
+      width: 200px;
+      height: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .health-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      transition: width 0.3s ease;
+    }
+    
+    /* Character Health Bars */
+    .character-health-container {
+      position: absolute;
+      width: 100px;
+      height: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      overflow: hidden;
+      z-index: 11;
+    }
+    
+    .character-health-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      transition: width 0.3s ease;
+    }
+    
+    #wizard-health-container {
+      bottom: 280px;
+      left: 225px;
+    }
+    
+    #monster-health-container {
+      bottom: 280px;
+      right: 225px;
+    }
+    
+    /* Timer */
+    #timer-container {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 50px;
+    }
+    
+    #timer-icon {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+    
+    #timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    /* Combo Meter */
+    #combo-meter {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    #combo-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s ease;
+    }
+    
+    /* Question Container */
+    #question-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: 90%;
+      max-width: 600px;
+    }
+    
+    #question-box {
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--primary);
+    }
+    
+    #question-text {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    #answer-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #answer-input {
+      flex: 1;
+      max-width: 200px;
+      padding: 12px 15px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      text-align: center;
+    }
+    
+    #answer-input:focus {
+      outline: 2px solid var(--primary);
+    }
+    
+    #answer-input.wrong {
+      animation: shake 0.5s;
+      outline: 2px solid var(--danger);
+    }
+    
+    /* Stats Container */
+    #stats-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 10;
+    }
+    
+    .stat-box {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      padding: 10px 20px;
+      text-align: center;
+      min-width: 100px;
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    /* Element Selection */
+    #element-selector {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+    
+    .element-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid transparent;
+    }
+    
+    .element-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .element-btn.active {
+      border-color: white;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px currentColor;
+    }
+    
+    /* Mobile Controls */
+    #mobile-controls {
+      display: none;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+    
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--primary);
+    }
+    
+    .modal-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .modal-text {
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    /* Animations */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    /* Feedback Elements */
+    .damage-indicator {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: bold;
+      animation: floatUp 1s ease-out forwards;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+      z-index: 20;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 1;
+      z-index: 15;
+    }
+    
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      p {
+        font-size: 1rem;
+      }
+      
+      #question-text {
+        font-size: 1.4rem;
+      }
+      
+      #answer-container {
+        flex-direction: column;
+      }
+      
+      #answer-input {
+        max-width: 100%;
+      }
+      
+      #wizard {
+        left: 50px;
+      }
+      
+      #monster {
+        right: 50px;
+      }
+      
+      #wizard-health-container {
+        left: 75px;
+      }
+      
+      #monster-health-container {
+        right: 75px;
+      }
+      
+      #mobile-controls {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+      <h1>PERTARUNGAN AJAIB MATEMATIKA</h1>
+      <p class="subtitle">Kuasai Matematika, Kalahkan Monster!</p>
+      <p class="instructions">
+        Dalam dunia sihir ini, pengetahuan matematikamu adalah senjatamu!<br>
+        Jawab soal matematika dengan benar untuk menyerang monster.<br>
+        Setiap 5 jawaban benar berturut-turut akan mengalahkan monster!<br>
+        Jawaban salah akan membuatmu diserang balik!
+      </p>
+      <button id="start-btn" class="btn">MULAI PETUALANGAN</button>
+      <div class="difficulty-container">
+        <p style="margin-bottom: 1rem; font-size: 1.2rem;">Pilih Tingkat Kesulitan:</p>
+        <div>
+          <button class="btn difficulty-btn easy" data-difficulty="easy">Pemula</button>
+          <button class="btn difficulty-btn medium" data-difficulty="medium">Ahli</button>
+          <button class="btn difficulty-btn hard" data-difficulty="hard">Master</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+      <!-- Battle Arena -->
+      <div id="battle-arena"></div>
+      
+      <!-- UI Elements -->
+      <div id="ui-container">
+        <!-- Health Bars -->
+        <div id="wizard-health" class="health-bar-container">
+          <div class="character-name">Penyihir</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+        
+        <div id="timer-container">
+          <span id="timer-icon">⏱️</span>
+          <span id="timer">30</span>
+        </div>
+        
+        <div id="monster-health" class="health-bar-container">
+          <div class="character-name">Monster</div>
+          <div class="health-bar">
+            <div class="health-fill"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Character Health Bars -->
+      <div id="wizard-health-container" class="character-health-container">
+        <div class="character-health-fill"></div>
+      </div>
+      
+      <div id="monster-health-container" class="character-health-container">
+        <div class="character-health-fill"></div>
+      </div>
+      
+      <!-- Combo Meter -->
+      <div id="combo-meter">
+        <div id="combo-fill"></div>
+      </div>
+
+      <!-- Characters -->
+      <div id="wizard" class="character"></div>
+      <div id="monster" class="character"></div>
+      
+      <!-- Projectiles -->
+      <div id="fireball" class="projectile"></div>
+      <div id="waterball" class="projectile"></div>
+      <div id="natureball" class="projectile"></div>
+      
+      <!-- Question Container -->
+      <div id="question-container">
+        <div id="question-box">
+          <div id="question-text">Memuat Pertanyaan...</div>
+          <div id="answer-container">
+            <input type="number" id="answer-input" placeholder="Jawaban" />
+            <button id="submit-answer" class="btn">SERANG!</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Container -->
+      <div id="stats-container">
+        <div class="stat-box">
+          <div class="stat-title">Skor</div>
+          <div id="score-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Streak</div>
+          <div id="streak-value" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-title">Level</div>
+          <div id="level-value" class="stat-value">1</div>
+        </div>
+      </div>
+      
+      <!-- Element Selection -->
+      <div id="element-selector">
+        <button id="fire-btn" class="element-btn active" data-element="FIRE">🔥</button>
+        <button id="water-btn" class="element-btn" data-element="WATER">💧</button>
+        <button id="nature-btn" class="element-btn" data-element="NATURE">🌿</button>
+      </div>
+      
+      <!-- Mobile Controls -->
+      <div id="mobile-controls">
+        <button id="mobile-attack" class="btn">Serang</button>
+      </div>
+    </div>
+    
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">LEVEL SELESAI!</h2>
+        <p class="modal-text">Kamu telah mengalahkan monster dengan kekuatan matematikamu!</p>
+        <p id="final-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        
+        <div class="modal-options">
+          <button id="next-level-btn" class="btn">Lanjut ke Level Berikutnya</button>
+          <button id="restart-btn" class="btn" style="background: linear-gradient(135deg, var(--danger), #e74c3c)">
+            Akhiri Permainan
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">GAME OVER</h2>
+        <p class="modal-text">Monster terlalu kuat untukmu saat ini. Tingkatkan kemampuan matematikamu dan coba lagi!</p>
+        <p id="gameover-score" class="modal-text">Skor Akhir: <span>0</span></p>
+        <button id="try-again-btn" class="btn">Coba Lagi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="shoot-sound" src="https://www.soundjay.com/mechanical/sounds/laser-01.mp3"></audio>
+  <audio id="hit-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3"></audio>
+  <audio id="win-sound" src="https://www.soundjay.com/misc/sounds/magic-chime-02.mp3"></audio>
+  <audio id="lose-sound" src="https://www.soundjay.com/mechanical/sounds/explosion-02.mp3"></audio>
+  <audio id="background-music" loop src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  <audio id="element-change-sound" src="https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3"></audio>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Game State Management
+    class GameState {
+      constructor() {
+        this.reset();
+      }
+      
+      reset() {
+        this.score = 0;
+        this.correctStreak = 0;
+        this.wrongStreak = 0;
+        this.difficulty = "medium";
+        this.wizardHealth = 100;
+        this.maxWizardHealth = 100;
+        this.monsterHealth = 150;
+        this.maxMonsterHealth = 150;
+        this.currentLevel = 1;
+        this.gameActive = false;
+        this.timeLeft = 30;
+        this.timerInterval = null;
+        this.activeElement = 'FIRE';
+        this.currentQuestion = null;
+        this.correctAnswer = null;
+        this.comboTimeLeft = 0;
+        this.maxComboTime = 5;
+        this.comboMultiplier = 1;
+      }
+      
+      get elements() {
+        return {
+          FIRE: { 
+            name: "Api", 
+            emoji: "🔥", 
+            color: "#ff416c",
+            weakTo: 'WATER', 
+            strongAgainst: 'NATURE',
+            projectile: 'fireball'
+          },
+          WATER: { 
+            name: "Air", 
+            emoji: "💧", 
+            color: "#1a8cff",
+            weakTo: 'NATURE', 
+            strongAgainst: 'FIRE',
+            projectile: 'waterball'
+          },
+          NATURE: { 
+            name: "Alam", 
+            emoji: "🌿", 
+            color: "#4CAF50",
+            weakTo: 'FIRE', 
+            strongAgainst: 'WATER',
+            projectile: 'natureball'
+          }
+        };
+      }
+    }
+
+    // DOM Manager
+    class DOMManager {
+      constructor() {
+        this.elements = {
+          startScreen: document.getElementById('start-screen'),
+          gameScreen: document.getElementById('game-screen'),
+          wizard: document.getElementById('wizard'),
+          monster: document.getElementById('monster'),
+          fireball: document.getElementById('fireball'),
+          waterball: document.getElementById('waterball'),
+          natureball: document.getElementById('natureball'),
+          questionText: document.getElementById('question-text'),
+          answerInput: document.getElementById('answer-input'),
+          submitBtn: document.getElementById('submit-answer'),
+          scoreValue: document.getElementById('score-value'),
+          streakValue: document.getElementById('streak-value'),
+          levelValue: document.getElementById('level-value'),
+          wizardHealth: document.querySelector('#wizard-health .health-fill'),
+          monsterHealth: document.querySelector('#monster-health .health-fill'),
+          wizardCharHealth: document.querySelector('#wizard-health-container .character-health-fill'),
+          monsterCharHealth: document.querySelector('#monster-health-container .character-health-fill'),
+          startBtn: document.getElementById('start-btn'),
+          fireBtn: document.getElementById('fire-btn'),
+          waterBtn: document.getElementById('water-btn'),
+          natureBtn: document.getElementById('nature-btn'),
+          difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+          mobileAttackBtn: document.getElementById('mobile-attack'),
+          timer: document.getElementById('timer'),
+          comboFill: document.getElementById('combo-fill'),
+          victoryModal: document.getElementById('victory-modal'),
+          gameoverModal: document.getElementById('gameover-modal'),
+          finalScore: document.getElementById('final-score span'),
+          gameoverScore: document.getElementById('gameover-score span'),
+          nextLevelBtn: document.getElementById('next-level-btn'),
+          restartBtn: document.getElementById('restart-btn'),
+          tryAgainBtn: document.getElementById('try-again-btn')
+        };
+      }
+    }
+
+    // Audio Manager
+    class AudioManager {
+      constructor() {
+        this.sounds = {
+          shoot: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/laser-01.mp3'] }),
+          hit: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-01.mp3'] }),
+          win: new Howl({ src: ['https://www.soundjay.com/misc/sounds/magic-chime-02.mp3'] }),
+          lose: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/explosion-02.mp3'] }),
+          bgm: new Howl({ 
+            src: ['https://www.soundjay.com/misc/sounds/magic-chime-01.mp3'],
+            loop: true,
+            volume: 0.3
+          }),
+          correct: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-09.mp3'] }),
+          wrong: new Howl({ src: ['https://www.soundjay.com/buttons/sounds/button-10.mp3'] }),
+          elementChange: new Howl({ src: ['https://www.soundjay.com/mechanical/sounds/sci-fi-01.mp3'], volume: 0.5 })
+        };
+      }
+      
+      play(soundName) {
+        this.sounds[soundName].play();
+      }
+      
+      stop(soundName) {
+        this.sounds[soundName].stop();
+      }
+    }
+
+    // Game Manager
+    class GameManager {
+      constructor() {
+        this.state = new GameState();
+        this.dom = new DOMManager();
+        this.audio = new AudioManager();
+        this.init();
+      }
+      
+      init() {
+        this.initParticles();
+        this.setupEventListeners();
+        this.updateUI();
+      }
+      
+      initParticles() {
+        particlesJS('particles-js', {
+          particles: {
+            number: { value: 80, density: { enable: true, value_area: 800 } },
+            color: { value: "#8f94fb" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: true },
+            size: { value: 3, random: true },
+            line_linked: { enable: true, distance: 150, color: "#8f94fb", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" }
+            }
+          }
+        });
+      }
+      
+      setupEventListeners() {
+        // Game Controls
+        this.dom.startBtn.addEventListener('click', () => this.startGame());
+        this.dom.submitBtn.addEventListener('click', () => this.checkAnswer());
+        this.dom.answerInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.checkAnswer();
+        });
+        this.dom.mobileAttackBtn.addEventListener('click', () => this.checkAnswer());
+        
+        // Element Selection
+        this.dom.fireBtn.addEventListener('click', () => this.changeElement('FIRE'));
+        this.dom.waterBtn.addEventListener('click', () => this.changeElement('WATER'));
+        this.dom.natureBtn.addEventListener('click', () => this.changeElement('NATURE'));
+        
+        // Difficulty Selection
+        this.dom.difficultyBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            this.state.difficulty = btn.dataset.difficulty;
+            this.dom.difficultyBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+        
+        // Modal Buttons
+        this.dom.nextLevelBtn.addEventListener('click', () => this.nextLevel());
+        this.dom.restartBtn.addEventListener('click', () => this.restartGame());
+        this.dom.tryAgainBtn.addEventListener('click', () => this.restartGame());
+        
+        // Set default difficulty
+        document.querySelector('.difficulty-btn.medium').classList.add('active');
+      }
+      
+      startGame() {
+        this.dom.startScreen.style.opacity = '0';
+        this.dom.startScreen.style.pointerEvents = 'none';
+        this.dom.gameScreen.style.opacity = '1';
+        this.dom.gameScreen.style.pointerEvents = 'all';
+        
+        this.state.reset();
+        this.state.gameActive = true;
+        
+        this.audio.play('bgm');
+        this.startTimer();
+        this.generateQuestion();
+        this.updateUI();
+      }
+      
+      startTimer() {
+        clearInterval(this.state.timerInterval);
+        this.state.timeLeft = 30;
+        this.updateTimerDisplay();
+        
+        this.state.timerInterval = setInterval(() => {
+          this.state.timeLeft--;
+          this.updateTimerDisplay();
+          
+          if (this.state.timeLeft <= 0) {
+            clearInterval(this.state.timerInterval);
+            this.handleTimeOut();
+          }
+        }, 1000);
+      }
+      
+      updateTimerDisplay() {
+        this.dom.timer.textContent = this.state.timeLeft;
+        
+        if (this.state.timeLeft <= 10) {
+          this.dom.timer.style.color = 'var(--danger)';
+          if (this.state.timeLeft <= 5) {
+            gsap.to(this.dom.timer, { 
+              scale: 1.2, 
+              duration: 0.3, 
+              yoyo: true, 
+              repeat: 1 
+            });
+          }
+        } else {
+          this.dom.timer.style.color = 'white';
+        }
+      }
+      
+      handleTimeOut() {
+        this.showFeedback("Waktu Habis!", false);
+        this.handleWrongAnswer();
+        this.startTimer();
+      }
+      
+      changeElement(element) {
+        if (!this.state.gameActive) return;
+        
+        this.state.activeElement = element;
+        this.audio.play('elementChange');
+        
+        // Update active button
+        this.dom.fireBtn.classList.remove('active');
+        this.dom.waterBtn.classList.remove('active');
+        this.dom.natureBtn.classList.remove('active');
+        
+        const activeBtn = this.dom[`${element.toLowerCase()}Btn`];
+        activeBtn.classList.add('active');
+        
+        // Visual feedback
+        gsap.to(activeBtn, {
+          scale: 1.2,
+          duration: 0.3,
+          yoyo: true,
+          repeat: 1
+        });
+        
+        this.showFeedback(`Elemen ${this.state.elements[element].name} Aktif!`, true);
+      }
+      
+      generateQuestion() {
+        let num1, num2, operator, answer;
+        const operators = ['+', '-', '*', '/'];
+        const levelMultiplier = 1 + (this.state.currentLevel * 0.2);
+        
+        switch(this.state.difficulty) {
+          case 'easy':
+            num1 = Math.floor(Math.random() * (5 * levelMultiplier)) + 1;
+            num2 = Math.floor(Math.random() * (5 * levelMultiplier)) + 1;
+            operator = operators[Math.floor(Math.random() * 2)];
+            break;
+          case 'medium':
+            num1 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+            num2 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+            operator = operators[Math.floor(Math.random() * 3)];
+            break;
+          case 'hard':
+            num1 = Math.floor(Math.random() * (15 * levelMultiplier)) + 1;
+            num2 = Math.floor(Math.random() * (10 * levelMultiplier)) + 1;
+            operator = operators[Math.floor(Math.random() * 4)];
+            break;
+        }
+        
+        if (operator === '/') {
+          const product = num1 * num2;
+          num1 = product;
+          answer = num2;
+        } else {
+          answer = eval(`${num1} ${operator} ${num2}`);
+        }
+        
+        let questionText;
+        if (operator === '*') {
+          questionText = `Berapakah ${num1} × ${num2}?`;
+        } else if (operator === '/') {
+          questionText = `Berapakah ${num1} ÷ ${num2}?`;
+        } else {
+          questionText = `Berapakah ${num1} ${operator} ${num2}?`;
+        }
+        
+        this.dom.questionText.textContent = questionText;
+        this.state.correctAnswer = answer;
+        this.resetTimer();
+      }
+      
+      checkAnswer() {
+        if (!this.state.gameActive) return;
+        
+        const userAnswer = parseFloat(this.dom.answerInput.value);
+        
+        if (isNaN(userAnswer)) {
+          this.showFeedback("Masukkan jawaban yang valid!", false);
+          this.dom.answerInput.classList.add('wrong');
+          setTimeout(() => this.dom.answerInput.classList.remove('wrong'), 500);
+          return;
+        }
+        
+        const isCorrect = Math.abs(userAnswer - this.state.correctAnswer) < 0.0001;
+        
+        if (isCorrect) {
+          this.handleCorrectAnswer();
+        } else {
+          this.handleWrongAnswer();
+        }
+        
+        this.dom.answerInput.value = '';
+        this.dom.answerInput.focus();
+      }
+      
+      handleCorrectAnswer() {
+        this.state.correctStreak++;
+        this.state.wrongStreak = 0;
+        this.state.score += 5 * this.state.currentLevel * this.state.comboMultiplier;
+        
+        this.updateCombo(true);
+        this.audio.play('correct');
+        this.updateUI();
+        this.showFeedback("BENAR!", true);
+        this.attackMonster();
+        this.generateQuestion();
+        
+        if (this.state.correctStreak >= 5) {
+          this.defeatMonster();
+        }
+      }
+      
+      handleWrongAnswer() {
+        this.state.wrongStreak++;
+        this.state.correctStreak = 0;
+        this.state.score = Math.max(0, this.state.score - 2);
+        
+        this.updateCombo(false);
+        this.audio.play('wrong');
+        this.updateUI();
+        this.showFeedback("SALAH!", false);
+        
+        if (this.state.wrongStreak >= 3) {
+          this.monsterAttack();
+        }
+        
+        this.generateQuestion();
+      }
+      
+      updateCombo(isCorrect) {
+        if (isCorrect) {
+          this.state.comboTimeLeft = this.state.maxComboTime;
+          this.state.comboMultiplier = 1 + Math.floor(this.state.correctStreak / 3);
+        } else {
+          this.state.comboTimeLeft = 0;
+          this.state.comboMultiplier = 1;
+        }
+        this.updateComboMeter();
+      }
+      
+      updateComboMeter() {
+        const percentage = (this.state.comboTimeLeft / this.state.maxComboTime) * 100;
+        this.dom.comboFill.style.width = `${percentage}%`;
+        
+        if (this.state.comboMultiplier > 1) {
+          this.dom.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--secondary))`;
+          this.dom.streakValue.style.color = 'var(--secondary)';
+          this.dom.streakValue.style.textShadow = '0 0 10px var(--secondary)';
+        } else {
+          this.dom.comboFill.style.background = `linear-gradient(90deg, var(--primary), var(--primary-dark))`;
+          this.dom.streakValue.style.color = 'var(--primary)';
+          this.dom.streakValue.style.textShadow = 'none';
+        }
+      }
+      
+      attackMonster() {
+        const element = this.state.elements[this.state.activeElement];
+        const projectile = this.dom[element.projectile];
+        
+        this.audio.play('shoot');
+        
+        gsap.fromTo(projectile, 
+          { x: 200, y: 0, opacity: 1, display: 'block' },
+          {
+            x: 700,
+            duration: 0.5,
+            ease: "power1.out",
+            onComplete: () => {
+              projectile.style.display = 'none';
+              this.audio.play('hit');
+              
+              let damage = 10 + (this.state.correctStreak * 2) * this.state.comboMultiplier;
+              const monsterElement = Object.keys(this.state.elements)[Math.floor(Math.random() * 3)];
+              
+              if (element.strongAgainst === monsterElement) {
+                damage *= 1.5;
+                this.showDamageIndicator(damage, "CRITICAL!", "#FFD700");
+              } else if (element.weakTo === monsterElement) {
+                damage *= 0.75;
+                this.showDamageIndicator(damage, "WEAK!", "#AAAAAA");
+              } else {
+                this.showDamageIndicator(damage, "", element.color);
+              }
+              
+              this.state.monsterHealth = Math.max(0, this.state.monsterHealth - damage);
+              this.updateHealthBars();
+              
+              gsap.to(this.dom.monster, { 
+                x: 10,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 5,
+                onComplete: () => {
+                  gsap.to(this.dom.monster, { x: 0, duration: 0.1 });
+                }
+              });
+              
+              if (this.state.monsterHealth <= 0) {
+                this.defeatMonster();
+              }
+            }
+          }
+        );
+      }
+      
+      monsterAttack() {
+        gsap.to(this.dom.wizard, { 
+          x: 10,
+          duration: 0.1,
+          yoyo: true,
+          repeat: 5,
+          onComplete: () => {
+            gsap.to(this.dom.wizard, { x: 0, duration: 0.1 });
+          }
+        });
+        
+        const damage = 15 + (this.state.currentLevel * 2);
+        this.showDamageIndicator(damage, "", "#FF0000", true);
+        
+        this.state.wizardHealth = Math.max(0, this.state.wizardHealth - damage);
+        this.updateHealthBars();
+        this.audio.play('hit');
+        
+        if (this.state.wizardHealth <= 0) {
+          this.defeatWizard();
+        }
+      }
+      
+      showDamageIndicator(amount, text, color, isWizard = false) {
+        const indicator = document.createElement('div');
+        indicator.className = 'damage-indicator';
+        indicator.textContent = `${text} ${Math.round(amount)}`;
+        indicator.style.color = color;
+        indicator.style.left = isWizard ? '150px' : '650px';
+        indicator.style.bottom = '250px';
+        document.getElementById('game-screen').appendChild(indicator);
+        
+        setTimeout(() => {
+          indicator.remove();
+        }, 1000);
+      }
+      
+      updateUI() {
+        this.dom.scoreValue.textContent = this.state.score;
+        this.dom.streakValue.textContent = this.state.correctStreak;
+        this.dom.levelValue.textContent = this.state.currentLevel;
+        this.updateHealthBars();
+      }
+      
+      updateHealthBars() {
+        const wizardPercentage = (this.state.wizardHealth / this.state.maxWizardHealth) * 100;
+        const monsterPercentage = (this.state.monsterHealth / this.state.maxMonsterHealth) * 100;
+        
+        this.dom.wizardHealth.style.width = `${wizardPercentage}%`;
+        this.dom.monsterHealth.style.width = `${monsterPercentage}%`;
+        this.dom.wizardCharHealth.style.width = `${wizardPercentage}%`;
+        this.dom.monsterCharHealth.style.width = `${monsterPercentage}%`;
+        
+        // Color feedback
+        const wizardColor = wizardPercentage < 30 ? 'linear-gradient(90deg, #f00, #ff5e00)' : 
+                         wizardPercentage < 60 ? 'linear-gradient(90deg, #ff5e00, #ff0)' : 
+                         'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+        
+        const monsterColor = monsterPercentage < 30 ? 'linear-gradient(90deg, #f00, #ff5e00)' : 
+                           monsterPercentage < 60 ? 'linear-gradient(90deg, #ff5e00, #ff0)' : 
+                           'linear-gradient(90deg, var(--primary), var(--primary-dark))';
+        
+        this.dom.wizardHealth.style.background = wizardColor;
+        this.dom.wizardCharHealth.style.background = wizardColor;
+        this.dom.monsterHealth.style.background = monsterColor;
+        this.dom.monsterCharHealth.style.background = monsterColor;
+      }
+      
+      resetTimer() {
+        this.state.timeLeft = 30;
+        this.updateTimerDisplay();
+      }
+      
+      showFeedback(message, isCorrect) {
+        const feedback = document.createElement('div');
+        feedback.textContent = message;
+        feedback.style.position = 'absolute';
+        feedback.style.left = '50%';
+        feedback.style.top = '30%';
+        feedback.style.transform = 'translateX(-50%)';
+        feedback.style.fontSize = '2.5rem';
+        feedback.style.fontWeight = 'bold';
+        feedback.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+        feedback.style.textShadow = '0 0 10px rgba(0, 0, 0, 0.8)';
+        feedback.style.zIndex = '20';
+        feedback.style.pointerEvents = 'none';
+        document.getElementById('game-screen').appendChild(feedback);
+        
+        gsap.fromTo(feedback,
+          { y: 0, opacity: 1, scale: 0.8 },
+          {
+            y: -50,
+            opacity: 0,
+            scale: 1.2,
+            duration: 1,
+            ease: "power1.out",
+            onComplete: () => feedback.remove()
+          }
+        );
+        
+        if (isCorrect) {
+          this.createConfetti();
+        }
+      }
+      
+      createConfetti() {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        
+        for (let i = 0; i < 50; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = `${Math.random() * 100}%`;
+          confetti.style.top = `${Math.random() * 100}%`;
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          document.getElementById('game-screen').appendChild(confetti);
+          
+          gsap.to(confetti, {
+            y: `+=${Math.random() * 200 + 100}`,
+            x: `+=${(Math.random() - 0.5) * 200}`,
+            opacity: 0,
+            duration: 1 + Math.random(),
+            ease: "power1.out",
+            onComplete: () => confetti.remove()
+          });
+        }
+      }
+      
+      defeatMonster() {
+        this.state.gameActive = false;
+        clearInterval(this.state.timerInterval);
+        this.audio.play('win');
+        
+        gsap.to(this.dom.monster, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          ease: "power1.in",
+          onComplete: () => this.showVictory()
+        });
+        
+        this.createConfetti();
+      }
+      
+      defeatWizard() {
+        this.state.gameActive = false;
+        clearInterval(this.state.timerInterval);
+        this.audio.play('lose');
+        
+        gsap.to(this.dom.wizard, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          ease: "power1.in",
+          onComplete: () => this.showGameOver()
+        });
+      }
+      
+      showVictory() {
+        this.dom.finalScore.textContent = this.state.score;
+        
+        if (this.state.currentLevel < 5) {
+          document.querySelector('#victory-modal .modal-title').textContent = `LEVEL ${this.state.currentLevel} SELESAI!`;
+          document.querySelector('#victory-modal .modal-text').textContent = 
+            `Kamu telah mengalahkan monster level ${this.state.currentLevel}!`;
+          this.dom.nextLevelBtn.style.display = 'block';
+        } else {
+          document.querySelector('#victory-modal .modal-title').textContent = 'KAMU MENANG!';
+          document.querySelector('#victory-modal .modal-text').textContent = 
+            'Selamat! Kamu telah menyelesaikan semua level permainan!';
+          this.dom.nextLevelBtn.style.display = 'none';
+        }
+        
+        this.dom.victoryModal.classList.add('active');
+      }
+      
+      showGameOver() {
+        this.dom.gameoverScore.textContent = this.state.score;
+        this.dom.gameoverModal.classList.add('active');
+      }
+      
+      nextLevel() {
+        this.dom.victoryModal.classList.remove('active');
+        this.state.currentLevel++;
+        this.state.maxMonsterHealth = 150 + (this.state.currentLevel * 25);
+        this.state.monsterHealth = this.state.maxMonsterHealth;
+        this.state.correctStreak = 0;
+        this.state.wrongStreak = 0;
+        this.state.wizardHealth = this.state.maxWizardHealth;
+        this.state.gameActive = true;
+        
+        this.startTimer();
+        this.generateQuestion();
+        this.updateUI();
+        this.showFeedback(`LEVEL ${this.state.currentLevel}!`, true);
+        
+        this.dom.monster.style.opacity = '1';
+        this.dom.monster.style.transform = 'translateY(0)';
+      }
+      
+      restartGame() {
+        this.dom.victoryModal.classList.remove('active');
+        this.dom.gameoverModal.classList.remove('active');
+        
+        this.state.reset();
+        this.state.gameActive = true;
+        
+        this.updateUI();
+        this.dom.wizard.style.opacity = '1';
+        this.dom.wizard.style.transform = 'translateY(0)';
+        this.dom.monster.style.opacity = '1';
+        this.dom.monster.style.transform = 'translateY(0)';
+        
+        this.startTimer();
+        this.generateQuestion();
+      }
+    }
+
+    // Initialize the game when loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      const game = new GameManager();
+    });
+  </script>
+</body>
+</html>
